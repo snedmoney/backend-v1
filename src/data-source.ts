@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { Token } from './models';
 
 export const AppDataSource = new DataSource({
     type: 'postgres',
@@ -9,7 +10,7 @@ export const AppDataSource = new DataSource({
     database: 'postgres',
     synchronize: true,
     logging: true,
-    entities: [],
+    entities: [Token],
     subscribers: [],
     migrations: [],
 });
