@@ -19,6 +19,10 @@ export class Link {
     }
     @Column()
     name: string;
+
+    @Column()
+    address: string;
+
     @OneToMany(() => TokenAccount, (acceptedToken) => acceptedToken.link, {
         cascade: true,
     })
