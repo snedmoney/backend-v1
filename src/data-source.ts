@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
+import { TokenAccount } from '@/models/tokenAccount';
 
-export const AppDataSource = new DataSource({
+let AppDataSource = new DataSource({
   type: 'postgres',
   host: 'localhost',
   port: 5432,
@@ -9,7 +10,19 @@ export const AppDataSource = new DataSource({
   database: 'postgres',
   synchronize: true,
   logging: true,
-  entities: [],
+  entities: [TokenAccount],
   subscribers: [],
   migrations: [],
 });
+
+export async function initializeDataSource() {
+  await AppDataSource.initialize();
+}
+
+export async function getDataSource() {
+  if (!AppDataSource.isInitialized) {
+    AppDataSource = await AppDataSource.initialize();
+  }
+
+  return AppDataSource;
+}

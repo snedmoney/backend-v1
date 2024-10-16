@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import helmet from 'helmet';
 
-import { AppDataSource } from './data-source';
+import tokensRouter from '@/routers/tokens';
 
 const app: Express = express();
 app.use(cors());
@@ -15,8 +15,8 @@ app.set('trust proxy', true);
 // Middlewares
 app.use(helmet());
 
+app.use('/api/tokens', tokensRouter);
 
-AppDataSource.initialize().catch((error) => console.log(error));
 const server = app.listen(8002, () => {
   console.log('server started')
 });
