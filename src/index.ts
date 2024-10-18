@@ -8,6 +8,7 @@ import errorHandler from '@/common/middleware/errorHandler';
 import rateLimiter from '@/common/middleware/rateLimiter';
 import authRouter from '@/routers/authorize';
 import linkRouter from '@/routers/link';
+import transactionRouter from '@/routers/transaction';
 import { verifyToken } from '@/util/jwt';
 import { AppDataSource } from './data-source';
 import { logger } from './util/logger';
@@ -25,8 +26,9 @@ app.set('trust proxy', true);
 app.use(helmet());
 app.use(rateLimiter);
 app.use('/api/authorize', authRouter);
-app.use('/api/link', linkRouter);
 app.use(verifyToken);
+app.use('/api/link', linkRouter);
+app.use('/api/transaction', transactionRouter);
 
 // Error handlers
 app.use(errorHandler());
