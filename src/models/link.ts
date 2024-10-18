@@ -1,13 +1,13 @@
 import {
-  BeforeInsert,
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-  UpdateDateColumn,
+    BeforeInsert,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 import { TokenAccount } from './tokenAccount';

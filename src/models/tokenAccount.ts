@@ -34,4 +34,5 @@ export class TokenAccount {
 
   @OneToMany(() => Link, link => link.destinationTokenInfo)
   links: Link[];
+
 }
