@@ -1,24 +1,23 @@
-import {
-    BeforeInsert,
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryColumn,
-    UpdateDateColumn,
-} from 'typeorm';
-
-import { TokenAccount } from './tokenAccount';
-import { Transaction } from './transaction';
-import { Wallet } from './wallet';
 import { generateStringId } from '@/util/unique-id';
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryColumn,
+  BeforeInsert,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { TokenAccount } from './tokenAccount';
+import { Wallet } from './wallet';
+import { Transaction } from './transaction';
 
 export enum LinkType {
   TIP = 'tip',
   DONATION = 'donation',
-  PAYMENT = 'payment'
+  PAYMENT = 'payment',
 }
 
 @Entity()
@@ -36,18 +35,18 @@ export class Link {
 
   @Column({
     type: 'enum',
-    enum: LinkType
+    enum: LinkType,
   })
   type: LinkType;
 
-  @ManyToOne(() => TokenAccount, tokenAccount => tokenAccount.links)
+  @ManyToOne(() => TokenAccount, (tokenAccount) => tokenAccount.links)
   destinationTokenInfo: TokenAccount;
 
-  @ManyToOne(() => Wallet, wallet => wallet.links)
+  @ManyToOne(() => Wallet, (wallet) => wallet.links)
   @JoinColumn({ name: 'destinationWalletAddress' })
   destinationWallet: Wallet;
 
-  @OneToMany(() => Transaction, transaction => transaction.link)
+  @OneToMany(() => Transaction, (transaction) => transaction.link)
   transactions: Transaction[];
 
   @CreateDateColumn()

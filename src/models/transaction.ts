@@ -1,20 +1,28 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-
-import { Link } from "./link";
-import { TokenAccount } from "./tokenAccount";
-import { Wallet } from './wallet';
+import {
+  Column,
+  CreateDateColumn,
+  Relation,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import type { Link } from './link';
+import type { Wallet } from './wallet';
+import type { TokenAccount } from './tokenAccount';
 
 export enum StatusType {
   IN_PROGRESS = 'inProgress',
   SUCCESS = 'success',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 export enum TransactionType {
   TIP = 'tip',
   DONATION = 'donation',
   PAYMENT = 'payment',
-  SWAP = 'swap'
+  SWAP = 'swap',
 }
 
 @Entity()
@@ -24,13 +32,13 @@ export class Transaction {
 
   @Column({
     type: 'enum',
-    enum: TransactionType
+    enum: TransactionType,
   })
   transactionType: TransactionType;
 
   @Column({
     type: 'enum',
-    enum: StatusType
+    enum: StatusType,
   })
   statusType: StatusType;
 
@@ -64,13 +72,13 @@ export class Transaction {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Wallet, wallet => wallet.transactions)
+  @ManyToOne('Wallet', 'transactions')
   @JoinColumn({ name: 'sourceWalletAddress' })
-  sourceWalletAddress: Wallet;
+  sourceWalletAddress: Relation<Wallet>;
 
-  @ManyToOne(() => TokenAccount, tokenAccount => tokenAccount.transactions)
-  sourceTokenInfo: TokenAccount;
+  @ManyToOne('TokenAccount', 'transactions')
+  sourceTokenInfo: Relation<TokenAccount>;
 
-  @ManyToOne(() => Link, link => link.transactions)
-  link: Link;
+  @ManyToOne('Link', 'transactiojs')
+  link: Relation<Link>;
 }

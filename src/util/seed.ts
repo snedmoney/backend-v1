@@ -1,3 +1,5 @@
+import { getDataSource } from '@/data-source';
+import { TokenAccount } from '@/models';
 import fs from 'fs';
 
 type TokenJSON = {
@@ -14,19 +16,55 @@ type TokenJSON = {
 };
 type TokensJSON = Record<string, TokenJSON>;
 
-function createSeedScript() {
+function createSeedTokenQueries(tokenTableName: string) {
+  if (fs.existsSync('src/static/tokens.json')) {
+    const data = fs.readFileSync('src/static/tokens.json', 'utf-8');
+    const tokens: TokensJSON = JSON.parse(data);
+
+    const insertStmts = [];
+    const deleteStmts = [];
+    Object.keys(tokens).map((key) => {
+      const token = tokens[key];
+      insertStmts.push(
+        `INSERT INTO ${tokenTableName} (token_address, chainId, chainName, decimals, logoURI, name, symbol) VALUES ('${token.address}', ${token.chainId}, '${token.name}', ${token.decimals}, '${token.logoURI}', '${token.name}', '${token.symbol}');`
+      );
+      deleteStmts.push(
+        `DELETE FROM ${tokenTableName} WHERE tokenAddress=${token.address}`
+      );
+    });
+
+    return {
+      insertQueries: insertStmts,
+      deleteQueries: deleteStmts,
+    };
+  }
+}
+
+export async function seedDatabase() {
+  const AppDataSource = await getDataSource();
+  const TokenDataSource = AppDataSource.getRepository(TokenAccount);
+
   const data = fs.readFileSync('src/static/tokens.json', 'utf-8');
   const tokens: TokensJSON = JSON.parse(data);
 
-  const stmts = [];
-  Object.keys(tokens).map((key) => {
+  Object.keys(tokens).forEach(async (key, i) => {
     const token = tokens[key];
-    stmts.push(
-      `INSERT INTO TokenAccount (tokenAddress, chainId, chainName, decimals, logoURI, name, symbol) VALUES ('${token.address}', ${token.chainId}, '${token.name}', ${token.decimals}, '${token.logoURI}', '${token.name}', '${token.symbol}');`
-    );
+    if (token.logoURI)
+      await TokenDataSource.upsert(
+        {
+          id: i,
+          chainId: parseInt(token.chainId),
+          decimals: token.decimals,
+          name: token.name,
+          chainName: token.name,
+          tokenAddress: token.address,
+          logoURI: token.logoURI,
+          symbol: token.symbol,
+        },
+        {
+          skipUpdateIfNoValuesChanged: true,
+          conflictPaths: ['id'],
+        }
+      );
   });
-
-  fs.writeFileSync('src/SEED.sql', stmts.join('\n'));
 }
-
-createSeedScript();

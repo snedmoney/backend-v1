@@ -1,7 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Link } from './link';
-import { Transaction } from './transaction';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  Unique,
+  Relation,
+} from 'typeorm';
+import type { Transaction } from './transaction';
+import type { Link } from './link';
 
 @Entity()
 export class TokenAccount {
@@ -29,10 +35,9 @@ export class TokenAccount {
   @Column()
   symbol: string;
 
-  @OneToMany(() => Transaction, transaction => transaction.sourceTokenInfo)
-  transactions: Transaction[];
+  @OneToMany('Transaction', 'sourceTokenInfo')
+  transactions: Relation<Transaction[]>;
 
-  @OneToMany(() => Link, link => link.destinationTokenInfo)
-  links: Link[];
-
+  @OneToMany('Link', 'destinationTokenInfo')
+  links: Relation<Link[]>;
 }
