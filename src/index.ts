@@ -9,6 +9,7 @@ import rateLimiter from '@/common/middleware/rateLimiter';
 import authRouter from '@/routers/authorize';
 import linkRouter from '@/routers/link';
 import transactionRouter from '@/routers/transaction';
+import tokensRouter from '@/routers/tokens';
 import { verifyToken } from '@/util/jwt';
 import { AppDataSource } from './data-source';
 import { logger } from './util/logger';
@@ -29,6 +30,7 @@ app.use('/api/authorize', authRouter);
 app.use(verifyToken);
 app.use('/api/link', linkRouter);
 app.use('/api/transaction', transactionRouter);
+app.use('/api/tokens', tokensRouter);
 
 // Error handlers
 app.use(errorHandler());
