@@ -1,58 +1,45 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import {
+  PrimaryColumn,
+  OneToMany,
+  Entity,
+  Relation,
+  OneToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Column,
+} from 'typeorm';
+import type { Transaction } from './transaction';
+import type { Link } from './link';
+import type { Setting } from './setting';
 
-import { Link } from "./link";
-import { Transaction } from './transaction';
+export enum UserRole {
+  CREATOR = 'creator',
+  FOLLOWER = 'follower',
+}
 
 @Entity()
 export class Wallet {
   @PrimaryColumn({ type: 'varchar', length: 255 })
   walletAddress: string;
 
-  @Column({ nullable: true })
-  name: string;
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+  })
+  role: UserRole;
 
-  @Column({ nullable: true })
-  userName: string;
+  @OneToMany('Transaction', 'sourceWalletAddress')
+  transactions: Relation<Transaction[]>;
 
-  @Column({ nullable: true })
-  email: string;
+  @OneToMany('Link', 'destinationWallet')
+  links: Relation<Link[]>;
 
-  @Column({ nullable: true })
-  twitter: string;
+  @OneToOne('Setting', 'wallet', { cascade: true })
+  setting: Relation<Setting>;
 
-  @Column({ nullable: true })
-  facebook: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @Column({ nullable: true })
-  tiktok: string;
-
-  @Column({ nullable: true })
-  youtube: string;
-
-  @Column({ nullable: true })
-  twitch: string;
-
-  @Column({ nullable: true })
-  instagram: string;
-
-  @Column({ nullable: true })
-  threads: string;
-
-  @Column({ nullable: true })
-  discord: string;
-
-  @Column({ nullable: true })
-  telegram: string;
-
-  @Column({ nullable: true })
-  link1: string;
-
-  @Column({ nullable: true })
-  link2: string;
-
-  @OneToMany(() => Transaction, transaction => transaction.sourceWalletAddress)
-  transactions: Transaction[];
-
-  @OneToMany(() => Link, link => link.destinationWallet)
-  links: Link[];
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -1,3 +1,4 @@
+import 'module-alias/register';
 import 'reflect-metadata';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -9,9 +10,12 @@ import rateLimiter from '@/common/middleware/rateLimiter';
 import authRouter from '@/routers/authorize';
 import linkRouter from '@/routers/link';
 import transactionRouter from '@/routers/transaction';
+import tokensRouter from '@/routers/tokens';
+import settingRouter from '@/routers/setting';
+import walletRouter from '@/routers/wallet';
 import { verifyToken } from '@/util/jwt';
-import { AppDataSource } from './data-source';
 import { logger } from './util/logger';
+import { seedDatabase } from './util/seed';
 
 const app: Express = express();
 
@@ -26,26 +30,30 @@ app.set('trust proxy', true);
 app.use(helmet());
 app.use(rateLimiter);
 app.use('/api/authorize', authRouter);
+app.use('/api/tokens', tokensRouter);
 app.use(verifyToken);
 app.use('/api/link', linkRouter);
+app.use('/api/setting', settingRouter);
 app.use('/api/transaction', transactionRouter);
+app.use('/api/wallet', walletRouter);
 
 // Error handlers
 app.use(errorHandler());
 
-AppDataSource.initialize().catch((error) => console.log(error));
+const port = process.env.PORT || 8002;
 
-const server = app.listen(8002, () => {
-    logger.info(`Server started`);
+const server = app.listen(port, async () => {
+  logger.info(`Server started`);
+  seedDatabase();
 });
 
 const onCloseSignal = () => {
-    logger.info('sigint received, shutting down');
-    server.close(() => {
-        logger.info('server closed');
-        process.exit();
-    });
-    setTimeout(() => process.exit(1), 10000).unref(); // Force shutdown after 10s
+  logger.info('sigint received, shutting down');
+  server.close(() => {
+    logger.info('server closed');
+    process.exit();
+  });
+  setTimeout(() => process.exit(1), 10000).unref(); // Force shutdown after 10s
 };
 
 process.on('SIGINT', onCloseSignal);
