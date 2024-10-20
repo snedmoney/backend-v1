@@ -1,20 +1,11 @@
-import {
-  PrimaryColumn,
-  OneToMany,
-  Entity,
-  Relation,
-  OneToOne,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Column,
-} from 'typeorm';
-import type { Transaction } from './transaction';
-import type { Link } from './link';
-import type { Setting } from './setting';
+import { PrimaryColumn, OneToMany, Entity, Column, OneToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Transaction } from './transaction';
+import { Link } from "./link";
+import { Setting } from "./setting";
 
 export enum UserRole {
   CREATOR = 'creator',
-  FOLLOWER = 'follower',
+  FOLLOWER = 'follower'
 }
 
 @Entity()
@@ -24,18 +15,18 @@ export class Wallet {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
+    enum: UserRole
   })
   role: UserRole;
 
-  @OneToMany('Transaction', 'sourceWalletAddress')
-  transactions: Relation<Transaction[]>;
+  @OneToMany(() => Transaction, transaction => transaction.sourceWalletAddress)
+  transactions: Transaction[];
 
-  @OneToMany('Link', 'destinationWallet')
-  links: Relation<Link[]>;
+  @OneToMany(() => Link, link => link.destinationWallet)
+  links: Link[];
 
-  @OneToOne('Setting', 'wallet', { cascade: true })
-  setting: Relation<Setting>;
+  @OneToOne(() => Setting, setting => setting.wallet, { cascade: true })
+  setting: Setting;
 
   @CreateDateColumn()
   createdAt: Date;

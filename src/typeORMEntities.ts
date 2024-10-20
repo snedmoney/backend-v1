@@ -1,17 +1,17 @@
+import { generateStringId } from '@/util/unique-id';
 import {
-    BeforeInsert,
+    Entity,
     Column,
     CreateDateColumn,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
+    UpdateDateColumn,
     PrimaryColumn,
     PrimaryGeneratedColumn,
-    UpdateDateColumn,
+    BeforeInsert,
+    OneToMany,
+    ManyToOne,
+    JoinColumn,
+    OneToOne,
 } from 'typeorm';
-
-import { generateStringId } from '@/util/unique-id';
 
 // Enums
 export enum LinkType {
@@ -32,6 +32,12 @@ export enum TransactionType {
     PAYMENT = 'payment',
     SWAP = 'swap'
 }
+
+export enum UserRole {
+    CREATOR = 'creator',
+    FOLLOWER = 'follower'
+  }
+  
 
 // Link Entity
 @Entity()
@@ -163,57 +169,88 @@ export class Transaction {
     link: Link;
 }
 
-// Wallet Entity
 @Entity()
 export class Wallet {
-    @PrimaryColumn({ type: 'varchar', length: 255 })
-    walletAddress: string;
+  @PrimaryColumn({ type: 'varchar', length: 255 })
+  walletAddress: string;
 
-    @Column({ nullable: true })
-    name: string;
+  @Column({
+    type: 'enum',
+    enum: UserRole
+  })
+  role: UserRole;
 
-    @Column({ nullable: true })
-    userName: string;
+  @OneToMany(() => Transaction, transaction => transaction.sourceWalletAddress)
+  transactions: Transaction[];
 
-    @Column({ nullable: true })
-    email: string;
+  @OneToMany(() => Link, link => link.destinationWallet)
+  links: Link[];
 
-    @Column({ nullable: true })
-    twitter: string;
+  @OneToOne(() => Setting, setting => setting.wallet, { cascade: true })
+  setting: Setting;
 
-    @Column({ nullable: true })
-    facebook: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column({ nullable: true })
-    tiktok: string;
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
 
-    @Column({ nullable: true })
-    youtube: string;
 
-    @Column({ nullable: true })
-    twitch: string;
+@Entity()
+export class Setting {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ nullable: true })
-    instagram: string;
+  @Column({ nullable: true })
+  name: string;
 
-    @Column({ nullable: true })
-    threads: string;
+  @Column({ nullable: true })
+  userName: string;
 
-    @Column({ nullable: true })
-    discord: string;
+  @Column({ nullable: true })
+  email: string;
 
-    @Column({ nullable: true })
-    telegram: string;
+  @Column({ nullable: true })
+  twitter: string;
 
-    @Column({ nullable: true })
-    link1: string;
+  @Column({ nullable: true })
+  facebook: string;
 
-    @Column({ nullable: true })
-    link2: string;
+  @Column({ nullable: true })
+  tiktok: string;
 
-    @OneToMany(() => Transaction, transaction => transaction.sourceWalletAddress)
-    transactions: Transaction[];
+  @Column({ nullable: true })
+  youtube: string;
 
-    @OneToMany(() => Link, link => link.destinationWallet)
-    links: Link[];
+  @Column({ nullable: true })
+  twitch: string;
+
+  @Column({ nullable: true })
+  instagram: string;
+
+  @Column({ nullable: true })
+  threads: string;
+
+  @Column({ nullable: true })
+  discord: string;
+
+  @Column({ nullable: true })
+  telegram: string;
+
+  @Column({ nullable: true })
+  link1: string;
+
+  @Column({ nullable: true })
+  link2: string;
+
+  @OneToOne(() => Wallet, wallet => wallet.setting)
+  @JoinColumn({ name: 'walletAddress' })
+  wallet: Wallet;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
