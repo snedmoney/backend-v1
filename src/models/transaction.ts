@@ -79,6 +79,6 @@ export class Transaction {
   @ManyToOne('TokenAccount', 'transactions')
   sourceTokenInfo: Relation<TokenAccount>;
 
-  @ManyToOne('Link', 'transactiojs')
+  @ManyToOne('Link', 'transactions')
   link: Relation<Link>;
 }

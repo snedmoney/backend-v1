@@ -67,7 +67,7 @@ router.delete('/:id', async (req: Request<Transaction>, res: Response) => {
 });
 
 // Get transactions by source wallet address
-router.get('/address/:address', async (req: Request, res: Response) => {
+router.get('/source/:address', async (req: Request, res: Response) => {
   const { address } = req.params;
   const AppDataSource = await getDataSource();
   const transactionRepository = AppDataSource.getRepository(Transaction);
@@ -87,7 +87,7 @@ router.get('/address/:address', async (req: Request, res: Response) => {
 
 // Get transactions by transaction type and source wallet address
 router.get(
-  'type/:transactionType/address/:address',
+  'type/:transactionType/source/:address',
   async (req: Request, res: Response) => {
     const { address, transactionType } = req.params;
     const AppDataSource = await getDataSource();
@@ -145,8 +145,11 @@ router.get('/destination/:address', async (req: Request, res: Response) => {
     relations: [
       'sourceWalletAddress',
       'sourceTokenInfo',
+      'sourceTokenInfo.chainInfo',
       'link',
       'link.destinationWallet',
+      'link.destinationTokenInfo',
+      'link.destinationTokenInfo.chainInfo'
     ],
   });
 

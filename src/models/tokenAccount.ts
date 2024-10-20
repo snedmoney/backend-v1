@@ -3,11 +3,13 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  Unique,
   Relation,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import type { Transaction } from './transaction';
 import type { Link } from './link';
+import type { ChainInfo } from './chain';
 
 @Entity()
 export class TokenAccount {
@@ -34,6 +36,10 @@ export class TokenAccount {
 
   @Column()
   symbol: string;
+
+  @ManyToOne('ChainInfo', 'tokenAccounts')
+  @JoinColumn({ name: 'networkId' })
+  chainInfo: Relation<ChainInfo>;
 
   @OneToMany('Transaction', 'sourceTokenInfo')
   transactions: Relation<Transaction[]>;

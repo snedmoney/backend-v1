@@ -38,7 +38,7 @@ router.get('/', async (req: Request, res: Response) => {
   const linkRepository = AppDataSource.getRepository(Link);
   const links = await linkRepository.find({
     where: { destinationWallet: { walletAddress: address } },
-    relations: ['transactions', 'destinationTokenInfo', 'destinationWallet'],
+    relations: ['transactions', 'destinationTokenInfo', 'destinationTokenInfo.chainInfo', 'destinationWallet'],
   });
   res.status(200).json(links);
 });

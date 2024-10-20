@@ -10,7 +10,7 @@ export enum UserRole {
 
 @Entity()
 export class Wallet {
-  @PrimaryColumn({ type: 'varchar', length: 255 })
+  @PrimaryColumn({ type: 'varchar', length: 255, unique: true })
   walletAddress: string;
 
   @Column({

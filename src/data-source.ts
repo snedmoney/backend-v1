@@ -4,6 +4,7 @@ import { TokenAccount } from './models/tokenAccount';
 import { Transaction } from './models/transaction';
 import { Wallet } from './models/wallet';
 import { Setting } from './models/setting';
+import { ChainInfo } from './models/chain';
 
 // This needs to be a singleton and initialize once
 let AppDataSource = new DataSource({
@@ -16,7 +17,7 @@ let AppDataSource = new DataSource({
   database: 'postgres',
   synchronize: true,
   logging: true,
-  entities: [Link, TokenAccount, Transaction, Wallet, Setting],
+  entities: [Link, TokenAccount, Transaction, Wallet, Setting, ChainInfo],
   subscribers: [],
   migrations: [],
 });
