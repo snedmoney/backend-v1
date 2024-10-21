@@ -1,0 +1,138 @@
+{
+    "0x471ece3750da237f93b8e339c536989b8978a438": {
+        "decimals": 18,
+        "address": "0x471ece3750da237f93b8e339c536989b8978a438",
+        "name": "Celo native asset",
+        "symbol": "CELO",
+        "chainId": 42220,
+        "logoURI": "https://assets.coingecko.com/coins/images/11090/standard/InjXBNx9_400x400.jpg?1696511031"
+    },
+    "0x66803fb87abd4aac3cbb3fad7c3aa01f6f3fb207": {
+        "decimals": 18,
+        "address": "0x66803fb87abd4aac3cbb3fad7c3aa01f6f3fb207",
+        "name": "Wrapped Ether (Wormhole)",
+        "symbol": "WETH",
+        "chainId": 42220,
+        "logoURI": "https://assets.coingecko.com/coins/images/39887/standard/weth.png?1724683172"
+    },
+    "0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049": {
+        "chainId": 42220,
+        "decimals": 18,
+        "address": "0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049",
+        "symbol": "EURA",
+        "name": "agEUR",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/19479/large/agEUR-4.png?1710726218"
+    },
+    "0xceba9300f2b948710d2653dd7b07f33a8b32118c": {
+        "decimals": 6,
+        "address": "0xceba9300f2b948710d2653dd7b07f33a8b32118c",
+        "name": "USDC",
+        "symbol": "USDC",
+        "chainId": 42220,
+        "logoURI": "https://assets.coingecko.com/coins/images/6319/standard/usdc.png?1696506694"
+    },
+    "0x765de816845861e75a25fca122bb6898b8b1282a": {
+        "decimals": 18,
+        "address": "0x765de816845861e75a25fca122bb6898b8b1282a",
+        "name": "Celo Dollar",
+        "symbol": "cUSD",
+        "chainId": 42220,
+        "logoURI": "https://assets.coingecko.com/coins/images/13161/standard/icon-celo-dollar-color-1000-circle-cropped.png?1696512945"
+    },
+    "0x48065fbbe25f71c9282ddf5e1cd6d6a887483d5e": {
+        "decimals": 6,
+        "address": "0x48065fbbe25f71c9282ddf5e1cd6d6a887483d5e",
+        "name": "Tether USD",
+        "symbol": "USD₮",
+        "chainId": 42220,
+        "logoURI": "https://assets.coingecko.com/coins/images/325/standard/Tether.png?1696501661"
+    },
+    "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73": {
+        "decimals": 18,
+        "address": "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73",
+        "name": "Celo Euro",
+        "symbol": "cEUR",
+        "chainId": 42220,
+        "logoURI": "https://coin-images.coingecko.com/coins/images/16756/large/CEUR.png?1696516329"
+    },
+    "0x02De4766C272abc10Bc88c220D214A26960a7e92": {
+        "chainId": 42220,
+        "decimals": 18,
+        "address": "0x02De4766C272abc10Bc88c220D214A26960a7e92",
+        "symbol": "NCT",
+        "name": "Toucan Protocol: Nature Carbon Tonne",
+        "logoURI": "https://toucan.earth/img/icons/nct.svg"
+    },
+    "0x1d18d0386f51ab03e7e84e71bda1681eba865f1f": {
+        "address": "0x1d18d0386f51ab03e7e84e71bda1681eba865f1f",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "JumpToken",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/22603/large/200x200.png?1696521919",
+        "symbol": "JMPT"
+    },
+    "0x2DEf4285787d58a2f811AF24755A8150622f4361": {
+        "chainId": 42220,
+        "symbol": "cETH",
+        "name": "Wrapped cEthereum",
+        "decimals": 18,
+        "address": "0x2DEf4285787d58a2f811AF24755A8150622f4361",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/39711/large/WETH.PNG?1723731131"
+    },
+    "0x2b9018ceb303d540bbf08de8e7de64fddd63396c": {
+        "address": "0x2b9018ceb303d540bbf08de8e7de64fddd63396c",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "impactMarket",
+        "symbol": "PACT",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/38805/large/impact.jpg?1718963785"
+    },
+    "0x37f750b7cc259a2f741af45294f6a16572cf5cad": {
+        "address": "0x37f750b7cc259a2f741af45294f6a16572cf5cad",
+        "chainId": 42220,
+        "decimals": 6,
+        "name": "Bridged USDC Wormhole Ethereum",
+        "symbol": "USDCET",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/23019/large/USDCet_wh_small.png?1696522314"
+    },
+    "0x456a3d042c0dbd3db53d5489e98dfb038553b0d0": {
+        "address": "0x456a3d042c0dbd3db53d5489e98dfb038553b0d0",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "Celo Kenyan Shilling",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/38052/large/cKES_200x200.png?1716403445",
+        "symbol": "cKES"
+    },
+    "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3": {
+        "address": "0x4f604735c1cf31399c6e711d5962b2b3e0225ad3",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "Glo Dollar",
+        "symbol": "USDGLO",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/29319/large/GLO_logo_pine_on_cyan_1_3.png?1716971065"
+    },
+    "0x73f93dcc49cb8a239e2032663e9475dd5ef29a08": {
+        "address": "0x73f93dcc49cb8a239e2032663e9475dd5ef29a08",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "ECO CFA",
+        "symbol": "eXOF",
+        "logoURI": "https://github.com/mento-protocol/mento-web/blob/main/src/images/tokens/eXOF.svg"
+    },
+    "0xe8537a3d056da446677b9e9d6c5db704eaab4787": {
+        "address": "0xe8537a3d056da446677b9e9d6c5db704eaab4787",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "Celo Brazilian Real",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/27205/large/creal.png?1696526254",
+        "symbol": "cREAL"
+    },
+    "0x9995cc8f20db5896943afc8ee0ba463259c931ed": {
+        "address": "0x9995cc8f20db5896943afc8ee0ba463259c931ed",
+        "chainId": 42220,
+        "decimals": 18,
+        "name": "Ethix (Wormhole)",
+        "logoURI": "https://coin-images.coingecko.com/coins/images/3031/large/ETHIX_icon_256x256-256.png?1696503766",
+        "symbol": "ETHIX"
+    }
+}
