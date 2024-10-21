@@ -1,4 +1,6 @@
-import 'module-alias/register';
+if (process.env.NODE_ENV === 'production') {
+  require('module-alias/register');
+}
 import 'reflect-metadata';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -10,11 +12,14 @@ import rateLimiter from '@/common/middleware/rateLimiter';
 import authRouter from '@/routers/authorize';
 import linkRouter from '@/routers/link';
 import transactionRouter from '@/routers/transaction';
+import tokensRouter from '@/routers/tokens';
 import settingRouter from '@/routers/setting';
 import walletRouter from '@/routers/wallet';
+import chainsRouter from '@/routers/chains';
 import { verifyToken } from '@/util/jwt';
-import { AppDataSource } from './data-source';
 import { logger } from './util/logger';
+import { seedDatabase } from './util/seed';
+import { seedChainsDatabase } from './util/seedChains';
 
 const app: Express = express();
 
@@ -29,22 +34,23 @@ app.set('trust proxy', true);
 app.use(helmet());
 app.use(rateLimiter);
 app.use('/api/authorize', authRouter);
-app.use('/api/link', linkRouter);
+app.use('/api/tokens', tokensRouter);
+app.use('/api/chains', chainsRouter);
 app.use(verifyToken);
+app.use('/api/link', linkRouter);
 app.use('/api/setting', settingRouter);
 app.use('/api/transaction', transactionRouter);
 app.use('/api/wallet', walletRouter);
 
-
 // Error handlers
 app.use(errorHandler());
 
-AppDataSource.initialize().catch((error) => console.log(error));
-
 const port = process.env.PORT || 8002;
 
-const server = app.listen(port, () => {
+const server = app.listen(port, async () => {
   logger.info(`Server started`);
+  seedDatabase();
+  seedChainsDatabase();
 });
 
 const onCloseSignal = () => {

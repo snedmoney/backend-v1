@@ -11,6 +11,7 @@ import {
     ManyToOne,
     JoinColumn,
     OneToOne,
+    Relation,
 } from 'typeorm';
 
 // Enums
@@ -77,38 +78,42 @@ export class Link {
 }
 
 // TokenAccount Entity
-@Entity()
-export class TokenAccount {
+  @Entity()
+  export class TokenAccount {
     @PrimaryGeneratedColumn()
     id: number;
-
+  
     @Column()
     tokenAddress: string;
-
+  
     @Column()
     chainId: number;
-
+  
     @Column()
     chainName: string;
-
+  
     @Column()
     decimals: number;
-
+  
     @Column()
     logoURI: string;
-
+  
     @Column()
     name: string;
-
+  
     @Column()
     symbol: string;
-
-    @OneToMany(() => Transaction, transaction => transaction.sourceTokenInfo)
-    transactions: Transaction[];
-
-    @OneToMany(() => Link, link => link.destinationTokenInfo)
-    links: Link[];
-}
+  
+    @ManyToOne('ChainInfo', 'tokenAccounts')
+    @JoinColumn({ name: 'networkId' })
+    chainInfo: Relation<ChainInfo>;
+  
+    @OneToMany('Transaction', 'sourceTokenInfo')
+    transactions: Relation<Transaction[]>;
+  
+    @OneToMany('Link', 'destinationTokenInfo')
+    links: Relation<Link[]>;
+  }  
 
 // Transaction Entity
 @Entity()
@@ -253,4 +258,32 @@ export class Setting {
 
   @UpdateDateColumn()
   updatedAt: Date;
+}
+
+@Entity()
+export class ChainInfo {
+  @PrimaryColumn()
+  networkId: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  allowed: boolean;
+
+  @Column({ nullable: true })
+  iconURL: string;
+
+  @Column({ type: 'json' })
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+
+  @Column({ nullable: true })
+  explorerURL: string;
+
+  @OneToMany('TokenAccount', 'chainInfo')
+  tokenAccounts: Relation<TokenAccount[]>;
 }
