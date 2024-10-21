@@ -1,0 +1,34 @@
+{
+    "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad": {
+        "decimals": 18,
+        "address": "0xb1a5700fa2358173fe465e6ea4ff52e36e88e2ad",
+        "name": "Blast",
+        "symbol": "BLAST",
+        "chainId": 81457,
+        "logoURI": "https://assets.coingecko.com/coins/images/35494/standard/Blast.jpg?1719385662"
+    },
+    "0x4300000000000000000000000000000000000003": {
+        "decimals": 18,
+        "address": "0x4300000000000000000000000000000000000003",
+        "name": "USDB",
+        "symbol": "USDB",
+        "chainId": 81457,
+        "logoURI": "https://assets.coingecko.com/coins/images/35595/standard/65c67f0ebf2f6a1bd0feb13c_usdb-icon-yellow.png?1709255427"
+    },
+    "0x4300000000000000000000000000000000000004": {
+        "decimals": 18,
+        "address": "0x4300000000000000000000000000000000000004",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "chainId": 81457,
+        "logoURI": "https://assets.coingecko.com/coins/images/2518/standard/weth.png?1696503332"
+    },
+    "0x2416092f143378750bb29b79ed961ab195cceea5": {
+        "decimals": 18,
+        "address": "0x2416092f143378750bb29b79ed961ab195cceea5",
+        "name": "Renzo Restaked ETH",
+        "symbol": "ezETH",
+        "chainId": 81457,
+        "logoURI": "https://coin-images.coingecko.com/coins/images/34753/large/Ezeth_logo_circle.png?1713496404"
+    }
+}
