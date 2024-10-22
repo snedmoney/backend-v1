@@ -2,8 +2,8 @@ import { createToken } from '@/util/jwt';
 import { Router, Request } from 'express';
 import { recoverMessageAddress } from 'viem';
 import { AppDataSource } from '@/data-source';
-import { Wallet, UserRole } from '@/models/wallet';
-import { Setting } from '@/models/setting';
+import { Wallet, UserRole } from '@/models_dep/wallet';
+import { Setting } from '@/models_dep/setting';
 
 const router = Router();
 

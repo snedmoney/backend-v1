@@ -1,5 +1,5 @@
 import { getDataSource } from '@/data-source';
-import { Link } from '@/models/link';
+import { Link } from '@/models_dep/link';
 import { Router, Request, Response } from 'express';
 
 const router = Router();
