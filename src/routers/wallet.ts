@@ -14,9 +14,9 @@ export class WalletRoutes {
     }
 
     registerRoutes() {
-        this.router.get('/', this.getWallets);
+        this.router.get('/:address', this.getWalletByAddress);
         this.router.get('/:id', this.getWalletById);
-        this.router.get('/addresses/:address', this.getWalletByAddress);
+        this.router.get('/', this.getWallets);
     }
 
     /**
@@ -74,8 +74,12 @@ export class WalletRoutes {
      *         description: Internal server error
      */
     getWallets = async (req: Request, res: Response) => {
-        const page = parseInt(typeof req.query.page === 'string' ? req.query.page : '1');
-        const perPage = parseInt(typeof req.query.per_page === 'string' ? req.query.per_page : '20');
+        const page = parseInt(
+            typeof req.query.page === 'string' ? req.query.page : '1'
+        );
+        const perPage = parseInt(
+            typeof req.query.per_page === 'string' ? req.query.per_page : '20'
+        );
 
         const wallets = await this.walletService.getWallets({
             page,
@@ -88,7 +92,7 @@ export class WalletRoutes {
             per_page: perPage,
             count: wallets.length,
         });
-    }
+    };
 
     /**
      * @swagger
@@ -151,7 +155,7 @@ export class WalletRoutes {
 
     /**
      * @swagger
-     * /api/wallets/addresses/{address}:
+     * /api/wallets/{address}:
      *   get:
      *     summary: Get a wallet by address
      *     description: Retrieve a wallet by its unique address

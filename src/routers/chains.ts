@@ -1,5 +1,6 @@
+import { Request, Response, Router } from 'express';
+
 import { ChainService } from '@/services/chain';
-import { Router, Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 
 export class ChainRoutes {
@@ -13,58 +14,36 @@ export class ChainRoutes {
     }
 
     registerRoutes() {
-        /**
-         * @swagger
-         * /api/chains:
-         *   get:
-         *     summary: Get a list of chains.
-         *     description: Get a list of chains.
-         *     parameters:
-         *       - in: query
-         *         name: page
-         *         schema:
-         *           type: integer
-         *         required: false
-         *         description: The current page of chains to display
-         *       - in: query
-         *         name: per_page
-         *         schema:
-         *           type: integer
-         *         required: false
-         *         description: The number of chains to display per page
-         *     responses:
-         *       '200':
-         *         description: A successful response
-         *       '404':
-         *         description: Chains not found
-         *       '500':
-         *         description: Internal server error
-         */
-        this.router.get('/', this.getChains);
-        /**
-         * @swagger
-         * /api/chains/{id}:
-         *   get:
-         *     summary: Get a single chain details by its ID
-         *     description: Get a single chain details by its ID
-         *     parameters:
-         *       - in: path
-         *         name: id
-         *         schema:
-         *           type: integer
-         *         required: true
-         *         description: The ID of the chain to retrieve
-         *     responses:
-         *       '200':
-         *         description: A successful response
-         *       '404':
-         *         description: Chain not found
-         *       '500':
-         *         description: Internal server error
-         */
         this.router.get('/:id', this.getChain);
+        this.router.get('/', this.getChains);
     }
-
+    /**
+     * @swagger
+     * /api/chains:
+     *   get:
+     *     summary: Get a list of chains.
+     *     description: Get a list of chains.
+     *     parameters:
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *         required: false
+     *         description: The current page of chains to display
+     *       - in: query
+     *         name: per_page
+     *         schema:
+     *           type: integer
+     *         required: false
+     *         description: The number of chains to display per page
+     *     responses:
+     *       '200':
+     *         description: A successful response
+     *       '404':
+     *         description: Chains not found
+     *       '500':
+     *         description: Internal server error
+     */
     getChains = async (req: Request, res: Response) => {
         const page = parseInt(req.query.page as string) || 1;
         const perPage = parseInt(req.query.per_page as string) || 20;
@@ -84,7 +63,27 @@ export class ChainRoutes {
             count: chains.length,
         });
     };
-
+    /**
+     * @swagger
+     * /api/chains/{id}:
+     *   get:
+     *     summary: Get a single chain details by its ID
+     *     description: Get a single chain details by its ID
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: integer
+     *         required: true
+     *         description: The ID of the chain to retrieve
+     *     responses:
+     *       '200':
+     *         description: A successful response
+     *       '404':
+     *         description: Chain not found
+     *       '500':
+     *         description: Internal server error
+     */
     getChain = async (req: Request, res: Response) => {
         let id;
         try {
