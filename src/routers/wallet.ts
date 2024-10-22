@@ -12,13 +12,68 @@ export class WalletRoutes {
         this.walletService = new WalletService(dataSource);
         this.registerRoutes();
     }
+
     registerRoutes() {
         this.router.get('/', this.getWallets);
         this.router.get('/:id', this.getWalletById);
-        this.router.get('/addresses/:id', this.getWalletByAddress);
+        this.router.get('/addresses/:address', this.getWalletByAddress);
     }
 
-    getWallets = async (req:Request, res: Response) => {
+    /**
+     * @swagger
+     * /api/wallets/:
+     *   get:
+     *     summary: Get a list of wallets
+     *     description: Retrieve a paginated list of wallets
+     *     parameters:
+     *       - in: query
+     *         name: page
+     *         schema:
+     *           type: integer
+     *           default: 1
+     *         required: false
+     *         description: The page number to retrieve
+     *       - in: query
+     *         name: per_page
+     *         schema:
+     *           type: integer
+     *           default: 20
+     *         required: false
+     *         description: The number of wallets to return per page
+     *     responses:
+     *       '200':
+     *         description: A list of wallets
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 wallets:
+     *                   type: array
+     *                   items:
+     *                     type: object
+     *                     properties:
+     *                       id:
+     *                         type: string
+     *                         description: The wallet ID
+     *                       address:
+     *                         type: string
+     *                         description: The wallet address
+     *                 page:
+     *                   type: integer
+     *                   description: The current page
+     *                 per_page:
+     *                   type: integer
+     *                   description: Number of items per page
+     *                 count:
+     *                   type: integer
+     *                   description: Total number of wallets
+     *       '400':
+     *         description: Bad request
+     *       '500':
+     *         description: Internal server error
+     */
+    getWallets = async (req: Request, res: Response) => {
         const page = parseInt(typeof req.query.page === 'string' ? req.query.page : '1');
         const perPage = parseInt(typeof req.query.per_page === 'string' ? req.query.per_page : '20');
 
@@ -35,6 +90,43 @@ export class WalletRoutes {
         });
     }
 
+    /**
+     * @swagger
+     * /api/wallets/{id}:
+     *   get:
+     *     summary: Get a wallet by ID
+     *     description: Retrieve a wallet by its unique ID
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The ID of the wallet to retrieve
+     *     responses:
+     *       '200':
+     *         description: Details of the wallet
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 wallet:
+     *                   type: object
+     *                   properties:
+     *                     id:
+     *                       type: string
+     *                       description: The wallet ID
+     *                     address:
+     *                       type: string
+     *                       description: The wallet address
+     *       '400':
+     *         description: Invalid wallet ID
+     *       '404':
+     *         description: Wallet not found
+     *       '500':
+     *         description: Internal server error
+     */
     getWalletById = async (req: Request, res: Response) => {
         let id: bigint;
         try {
@@ -57,8 +149,45 @@ export class WalletRoutes {
         });
     };
 
+    /**
+     * @swagger
+     * /api/wallets/addresses/{address}:
+     *   get:
+     *     summary: Get a wallet by address
+     *     description: Retrieve a wallet by its unique address
+     *     parameters:
+     *       - in: path
+     *         name: address
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: The address of the wallet to retrieve
+     *     responses:
+     *       '200':
+     *         description: Details of the wallet
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 wallet:
+     *                   type: object
+     *                   properties:
+     *                     id:
+     *                       type: string
+     *                       description: The wallet ID
+     *                     address:
+     *                       type: string
+     *                       description: The wallet address
+     *       '400':
+     *         description: Invalid wallet address
+     *       '404':
+     *         description: Wallet not found
+     *       '500':
+     *         description: Internal server error
+     */
     getWalletByAddress = async (req: Request, res: Response) => {
-        const address: string = req.params.address;
+        const { address } = req.params;
         if (!address) {
             return res.status(400).json({
                 error: 'Invalid wallet Address',

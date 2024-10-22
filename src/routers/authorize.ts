@@ -62,6 +62,49 @@ export class AuthRoutes {
         this.router.post('/', this.authorize);
     }
 
+     /**
+     * @swagger
+     * /api/authorize/:
+     *   post:
+     *     summary: Authorize a user based on their signature
+     *     description: Validates a user's signature and generates a token if the user is authorized.
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               signature:
+     *                 type: string
+     *                 pattern: '^0x[a-fA-F0-9]+$'
+     *                 description: The signature to validate
+     *             required:
+     *               - signature
+     *     responses:
+     *       '200':
+     *         description: Successful authorization and token generation
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 token:
+     *                   type: string
+     *                   description: The generated authorization token
+     *       '400':
+     *         description: Bad request due to missing or invalid signature
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: string
+     *                   description: Error message
+     *       '500':
+     *         description: Internal server error
+     */
     authorize = async (req: Request<any, any, AuthRequest>, res: Response) => {
         const { signature } = req.body;
         if (!signature) {
