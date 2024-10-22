@@ -1,6 +1,10 @@
 import { DataSource, Repository } from "typeorm";
+import { User, Wallet } from "@/models";
 
-import { Wallet } from "@/models";
+type CreateWalletDetails = {
+    address: string;
+    user: User;
+};
 
 type GetWalletsOptions = {
     perPage: number;
@@ -18,7 +22,7 @@ export class WalletService {
         this.repository = dataSource.getRepository(Wallet);
     }
 
-    async getWalletById(id: bigint) {
+    getWalletById = async (id: bigint) => {
         const wallet = await this.repository.findOne({
             where: {
                 id,
@@ -27,7 +31,7 @@ export class WalletService {
         return wallet;
     }
 
-    async getWalletByAddress(address: string){
+    getWalletByAddress = async (address: string) => {
         const wallet = await this.repository.findOne({
             where: {
                 address,
@@ -36,7 +40,7 @@ export class WalletService {
         return wallet;
     }
 
-    async getWallets(options: GetWalletsOptions) {
+    getWallets = async (options: GetWalletsOptions) => {
         const [wallets] = await this.repository.findAndCount({
             take: options.perPage,
             skip: (options.page - 1) * options.perPage,
@@ -44,12 +48,21 @@ export class WalletService {
         return wallets;
     }
 
-    async updateWallet(options: UpdateWalletOptions){
-        const { id, updates } = options;
-        const updatedWallet = await this.repository.update({
-            id
-        }, updates);
-        
-        return updatedWallet;
+    getWalletByUser = async (user: User) => {
+        const wallet = await this.repository.findOne({
+            where: {
+                user,
+            }
+        });
+        return wallet;
     }
+
+    createWallet = async (details: CreateWalletDetails) => {
+        const { address, user } = details;
+        const wallet = new Wallet();
+        wallet.address = address;
+        wallet.user = user;
+        this.repository.save(wallet);
+    }
+
 }

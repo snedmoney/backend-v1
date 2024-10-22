@@ -13,9 +13,26 @@ export class WalletRoutes {
         this.registerRoutes();
     }
     registerRoutes() {
+        this.router.get('/', this.getWallets);
         this.router.get('/:id', this.getWalletById);
-        this.router.put('/:id', this.updateWallet);
         this.router.get('/addresses/:id', this.getWalletByAddress);
+    }
+
+    getWallets = async (req:Request, res: Response) => {
+        const page = parseInt(typeof req.query.page === 'string' ? req.query.page : '1');
+        const perPage = parseInt(typeof req.query.per_page === 'string' ? req.query.per_page : '20');
+
+        const wallets = await this.walletService.getWallets({
+            page,
+            perPage,
+        });
+
+        res.status(200).json({
+            wallets,
+            page,
+            per_page: perPage,
+            count: wallets.length,
+        });
     }
 
     getWalletById = async (req: Request, res: Response) => {
@@ -57,34 +74,6 @@ export class WalletRoutes {
         }
         res.status(200).json({
             wallet,
-        });
-    };
-
-    updateWallet = async (req: Request, res: Response) => {
-        let id: bigint;
-        try {
-            id = BigInt(req.params.id);
-        } catch (error) {
-            return res.status(400).json({
-                error: 'Invalid wallet ID',
-            });
-        }
-        const wallet = await this.walletService.getWalletById(id);
-
-        if (!wallet) {
-            return res.status(404).json({
-                error: 'No wallet found.',
-            });
-        }
-
-        if (!req.body) {
-            return res.status(400).json({
-                error: 'Body missing from the request.',
-            });
-        }
-        await this.walletService.updateWallet({
-            id: wallet.id,
-            updates: req.body,
         });
     };
 }

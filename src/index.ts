@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import express, { Express } from 'express';
 
 import { AppDataSource } from './data-source';
+import { AuthRoutes } from '@/routers/authorize';
 import { ChainRoutes } from './routers/chains';
 // import authRouter from '@/routers/authorize';
 // import linkRouter from '@/routers/link';
@@ -49,6 +50,7 @@ async function main() {
     const tokenRoutes = new TokenRoutes(dataSource);
     const chainRoutes = new ChainRoutes(dataSource);
     const walletRoutes = new WalletRoutes(dataSource);
+    const authRouter = new AuthRoutes(dataSource);
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -63,7 +65,7 @@ async function main() {
     // Middlewares
     app.use(helmet());
     app.use(rateLimiter);
-    // app.use('/api/authorize', authRouter);
+    app.use('/api/authorize', authRouter.router);
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
@@ -73,7 +75,6 @@ async function main() {
     // app.use('/api/link', linkRouter);
     // app.use('/api/setting', settingRouter);
     // app.use('/api/transaction', transactionRouter);
-    // app.use('/api/wallet', walletRoutes.router);
 
     // Error handlers
     app.use(errorHandler());
