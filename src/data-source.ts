@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
-import { Token } from './models';
+import { Token, User } from './models';
 import { Chain } from './models/chain';
+import { Wallet } from './models/wallet';
 // import { Link } from './models/link';
 // import { TokenAccount } from './models/tokenAccount';
 // import { Transaction } from './models/transaction';
@@ -19,7 +20,7 @@ export const AppDataSource = new DataSource({
     database: 'postgres',
     synchronize: true,
     logging: true,
-    entities: [Token, Chain],
+    entities: [Token, Chain, Wallet, User],
     subscribers: [],
     migrations: [],
 });
