@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { AppDataSource } from '@/data-source';
-import { Wallet } from '@/models/wallet';
+import { Wallet } from '@/models_dep/wallet';
 
 const router = Router();
 
