@@ -1,37 +1,31 @@
-import {
-    Entity,
-    Column,
-    OneToMany,
-    Relation,
-    PrimaryColumn,
-  } from 'typeorm';
-  import type { TokenAccount } from './tokenAccount';
-  
-  @Entity()
-  export class ChainInfo {
+import { Entity, Column, OneToMany, Relation, PrimaryColumn } from 'typeorm';
+import type { Token } from './token';
+
+@Entity()
+export class Chain {
+    // Do not auto increment this, chain IDs are universally unique
     @PrimaryColumn()
-    networkId: number;
-  
+    id: number;
+
     @Column()
     name: string;
-  
+
     @Column()
     allowed: boolean;
-  
+
     @Column({ nullable: true })
     iconURL: string;
-  
-    @Column({ type: 'json' })
+
+    @Column({ type: 'jsonb', nullable: true })
     nativeCurrency: {
-      name: string;
-      symbol: string;
-      decimals: number;
+        name: string;
+        symbol: string;
+        decimals: number;
     };
-  
+
     @Column({ nullable: true })
     explorerURL: string;
-  
-    @OneToMany('TokenAccount', 'chainInfo')
-    tokenAccounts: Relation<TokenAccount[]>;
-  }
-  
+
+    @OneToMany('Token', 'chain')
+    tokens: Relation<Token[]>;
+}

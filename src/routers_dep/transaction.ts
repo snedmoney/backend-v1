@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getDataSource } from '@/data-source';
-import { Transaction, TransactionType } from '@/models/transaction';
+import { Transaction, TransactionType } from '@/models_dep/transaction';
 
 const router = Router();
 

@@ -1,36 +1,31 @@
-import { PrimaryColumn, OneToMany, Entity, Column, OneToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { Transaction } from './transaction';
-import { Link } from "./link";
-import { Setting } from "./setting";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+  UpdateDateColumn
+} from 'typeorm';
 
-export enum UserRole {
-  CREATOR = 'creator',
-  FOLLOWER = 'follower'
-}
+import type { User } from './user';
 
 @Entity()
 export class Wallet {
-  @PrimaryColumn({ type: 'varchar', length: 255, unique: true })
-  walletAddress: string;
+  @PrimaryGeneratedColumn('increment')
+  id: bigint;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole
-  })
-  role: UserRole;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string;
 
-  @OneToMany(() => Transaction, transaction => transaction.sourceWalletAddress)
-  transactions: Transaction[];
+  @ManyToOne('User', 'user')
+  @JoinColumn({ name: 'userId' })
+  user: Relation<User>;
 
-  @OneToMany(() => Link, link => link.destinationWallet)
-  links: Link[];
-
-  @OneToOne(() => Setting, setting => setting.wallet, { cascade: true })
-  setting: Setting;
-
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 }

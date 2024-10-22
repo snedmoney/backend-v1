@@ -1,54 +1,79 @@
-import { Router, Request, Response } from 'express';
-import { AppDataSource } from '@/data-source';
-import { Wallet } from '@/models/wallet';
+import { Request, Response, Router } from 'express';
 
-const router = Router();
+import { DataSource } from 'typeorm';
+import { WalletService } from '@/services/wallet';
 
-// Get a wallet by address
-router.get('/:walletAddress', async (req: Request, res: Response) => {
-  const { walletAddress } = req.params;
-  const walletRepository = AppDataSource.getRepository(Wallet);
+export class WalletRoutes {
+    walletService: WalletService;
+    router: Router;
 
-  const wallet = await walletRepository.findOne({
-    where: { walletAddress },
-    relations: ['transactions', 'links', 'setting'],
-  });
+    constructor(dataSource: DataSource) {
+        this.router = Router();
+        this.walletService = new WalletService(dataSource);
+        this.registerRoutes();
+    }
+    registerRoutes() {
+        this.router.get('/', this.getWallets);
+        this.router.get('/:id', this.getWalletById);
+        this.router.get('/addresses/:id', this.getWalletByAddress);
+    }
 
-  if (!wallet) {
-    return res.status(404).json({ message: 'Wallet not found' });
-  }
+    getWallets = async (req:Request, res: Response) => {
+        const page = parseInt(typeof req.query.page === 'string' ? req.query.page : '1');
+        const perPage = parseInt(typeof req.query.per_page === 'string' ? req.query.per_page : '20');
 
-  res.status(200).json(wallet);
-});
+        const wallets = await this.walletService.getWallets({
+            page,
+            perPage,
+        });
 
-// Update a wallet by address
-router.put('/:walletAddress', async (req: Request, res: Response) => {
-  const { walletAddress } = req.params;
-  const walletRepository = AppDataSource.getRepository(Wallet);
+        res.status(200).json({
+            wallets,
+            page,
+            per_page: perPage,
+            count: wallets.length,
+        });
+    }
 
-  const wallet = await walletRepository.findOne({ where: { walletAddress } });
-  if (!wallet) {
-    return res.status(404).json({ message: 'Wallet not found' });
-  }
+    getWalletById = async (req: Request, res: Response) => {
+        let id: bigint;
+        try {
+            id = BigInt(req.params.id);
+        } catch (error) {
+            return res.status(400).json({
+                error: 'Invalid wallet ID',
+            });
+        }
 
-  walletRepository.merge(wallet, req.body);
-  const updatedWallet = await walletRepository.save(wallet);
+        const wallet = await this.walletService.getWalletById(id);
 
-  res.status(200).json(updatedWallet);
-});
+        if (!wallet) {
+            return res.status(404).json({
+                error: 'No wallet found.',
+            });
+        }
+        res.status(200).json({
+            wallet,
+        });
+    };
 
-// Delete a wallet by address
-router.delete('/:walletAddress', async (req: Request, res: Response) => {
-  const { walletAddress } = req.params;
-  const walletRepository = AppDataSource.getRepository(Wallet);
+    getWalletByAddress = async (req: Request, res: Response) => {
+        const address: string = req.params.address;
+        if (!address) {
+            return res.status(400).json({
+                error: 'Invalid wallet Address',
+            });
+        }
 
-  const wallet = await walletRepository.findOne({ where: { walletAddress } });
-  if (!wallet) {
-    return res.status(404).json({ message: 'Wallet not found' });
-  }
+        const wallet = await this.walletService.getWalletByAddress(address);
 
-  await walletRepository.remove(wallet);
-  res.status(204).send();
-});
-
-export default router;
+        if (!wallet) {
+            return res.status(404).json({
+                error: 'No wallet found.',
+            });
+        }
+        res.status(200).json({
+            wallet,
+        });
+    };
+}
