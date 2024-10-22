@@ -7,7 +7,17 @@ type GetTokensOptions = {
     name?: string;
     symbol?: string;
     address?: string;
-    chainId?: number;
+};
+
+type GetTokensByChainOptions = {
+    chainId: number;
+    page: number;
+    perPage: number;
+};
+
+type TokenWithBalance = Token & {
+    balance: number;
+    popularity: number;
 };
 
 export class TokenService {
@@ -30,6 +40,30 @@ export class TokenService {
         const [tokens] = await this.repo.findAndCount({
             take: options.perPage,
             skip: (options.page - 1) * options.perPage,
+        });
+
+        return tokens;
+    }
+
+    async searchTokens(query: string): Promise<Token[]> {
+        const tokens = await this.repo.manager
+            .createQueryBuilder()
+            .select('tokens')
+            .from(Token, 'tokens')
+            .where(`tokens.name ILIKE '%${query}%'`)
+            .getMany();
+        return tokens;
+    }
+
+    async getTokensByChain(options: GetTokensByChainOptions): Promise<Token[]> {
+        const [tokens] = await this.repo.findAndCount({
+            take: options.perPage,
+            skip: (options.page - 1) * options.perPage,
+            where: {
+                chain: {
+                    id: options.chainId,
+                },
+            },
         });
 
         return tokens;

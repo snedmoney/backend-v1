@@ -13,7 +13,55 @@ export class ChainRoutes {
     }
 
     registerRoutes() {
+        /**
+         * @swagger
+         * /api/chains:
+         *   get:
+         *     summary: Get a list of chains.
+         *     description: Get a list of chains.
+         *     parameters:
+         *       - in: query
+         *         name: page
+         *         schema:
+         *           type: integer
+         *         required: false
+         *         description: The current page of chains to display
+         *       - in: query
+         *         name: per_page
+         *         schema:
+         *           type: integer
+         *         required: false
+         *         description: The number of chains to display per page
+         *     responses:
+         *       '200':
+         *         description: A successful response
+         *       '404':
+         *         description: Chains not found
+         *       '500':
+         *         description: Internal server error
+         */
         this.router.get('/', this.getChains);
+        /**
+         * @swagger
+         * /api/chains/{id}:
+         *   get:
+         *     summary: Get a single chain details by its ID
+         *     description: Get a single chain details by its ID
+         *     parameters:
+         *       - in: path
+         *         name: id
+         *         schema:
+         *           type: integer
+         *         required: true
+         *         description: The ID of the chain to retrieve
+         *     responses:
+         *       '200':
+         *         description: A successful response
+         *       '404':
+         *         description: Chain not found
+         *       '500':
+         *         description: Internal server error
+         */
         this.router.get('/:id', this.getChain);
     }
 
