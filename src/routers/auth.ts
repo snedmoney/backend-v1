@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { AuthService } from '@/services/auth';
 
-export class AuthorizeRoutes {
+export class AuthRoutes {
     authService: AuthService;
     router: Router;
 

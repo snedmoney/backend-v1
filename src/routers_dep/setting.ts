@@ -1,5 +1,5 @@
 import { AppDataSource } from '@/data-source';
-import { Setting } from '@/models/setting';
+import { Setting } from '@/models_dep/setting';
 import { Router, Request, Response } from 'express';
 
 const router = Router();
