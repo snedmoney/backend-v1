@@ -69,9 +69,9 @@ async function main() {
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
+    app.use(verifyToken);
     app.use('/api/wallets', walletRoutes.router);
     // app.use('/api/chains', chainsRouter);
-    // app.use(verifyToken);
     // app.use('/api/link', linkRouter);
     // app.use('/api/setting', settingRouter);
     // app.use('/api/transaction', transactionRouter);
