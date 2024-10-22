@@ -11,7 +11,7 @@ import {
 
 import type { User } from './user';
 
-@Entity('wallet')
+@Entity()
 export class Wallet {
   @PrimaryGeneratedColumn('increment')
   id: bigint;

@@ -18,10 +18,19 @@ export class WalletService {
         this.repository = dataSource.getRepository(Wallet);
     }
 
-    async getWallet(id: bigint) {
+    async getWalletById(id: bigint) {
         const wallet = await this.repository.findOne({
             where: {
                 id,
+            }
+        });
+        return wallet;
+    }
+
+    async getWalletByAddress(address: string){
+        const wallet = await this.repository.findOne({
+            where: {
+                address,
             }
         });
         return wallet;
@@ -40,7 +49,7 @@ export class WalletService {
         const updatedWallet = await this.repository.update({
             id
         }, updates);
-
+        
         return updatedWallet;
     }
 }
