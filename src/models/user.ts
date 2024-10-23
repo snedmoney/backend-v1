@@ -5,10 +5,15 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   Relation,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 import type { Wallet } from './wallet';
+
+export enum UserRole {
+  CREATOR = 'creator',
+  FOLLOWER = 'follower',
+}
 
 @Entity('user')
 export class User {

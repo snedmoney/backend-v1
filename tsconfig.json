@@ -4,7 +4,7 @@
         "module": "node16",
         "lib": ["ES2022"],
         "moduleResolution": "NodeNext",
-        "rootDir": ".",
+        "rootDir": "src",
         "baseUrl": ".",
         "outDir": "dist",
         "allowSyntheticDefaultImports": true,
@@ -14,18 +14,18 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": false,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "noUnusedParameters": true,
         "noImplicitAny": false,
         "noImplicitThis": false,
         "strictNullChecks": false,
+        "skipLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "paths": {
             "@/*": ["src/*"]
-        },
-        "skipLibCheck": true
+        }
     },
     "include": ["src/**/*", "__tests__/**/*"],
-    "exclude": ["node_modules"]
+    "exclude": ["src/**/*_dep"]
 }
