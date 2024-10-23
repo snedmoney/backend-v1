@@ -30,5 +30,9 @@ export class Token {
   logoURI: string;
 
   @ManyToOne('Chain', 'tokens')
+  @JoinColumn({ name: 'chainId' })
   chain: Relation<Chain>;
+
+  @Column()
+  chainId: number;
 }

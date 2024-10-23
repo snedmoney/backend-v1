@@ -66,25 +66,34 @@ export default class SeedTokens implements Seeder {
             .values(chains)
             .execute();
 
-        const data = fs.readFileSync('src/static/tokens.json', 'utf-8');
-        const tokensJSON: TokensJSON = JSON.parse(data);
+        let tokens: Partial<Token>[] = [];
+        fs.readdirSync('src/static/tokens').forEach((tokenFileName) => {
+            console.log('reading ', tokenFileName);
 
-        // // @ts-expect-error chain has null tokens
-        const tokens: Partial<Token>[] = Object.keys(tokensJSON)
-            .filter((key) => tokensJSON[key].logoURI)
-            .map((key, i) => {
-                if (i === 63) console.log(tokensJSON[key]);
-                const token = tokensJSON[key];
+            const data = fs.readFileSync(
+                `src/static/tokens/${tokenFileName}`,
+                'utf-8'
+            );
+            const tokensJSON: TokensJSON = JSON.parse(data);
 
-                return {
-                    decimals: token.decimals,
-                    name: token.name,
-                    address: token.address,
-                    logoURI: token.logoURI,
-                    symbol: token.symbol,
-                    chain: chainMap.get(token.chainId),
-                };
-            });
+            // // @ts-expect-error chain has null tokens
+            Object.keys(tokensJSON)
+                .filter((key) => tokensJSON[key].logoURI)
+                .forEach((key, i) => {
+                    if (i === 63) console.log(tokensJSON[key]);
+                    const token = tokensJSON[key];
+
+                    tokens.push({
+                        decimals: token.decimals,
+                        name: token.name,
+                        address: token.address,
+                        logoURI: token.logoURI,
+                        symbol: token.symbol,
+                        chain: chainMap.get(token.chainId),
+                        chainId: token.chainId,
+                    });
+                });
+        });
 
         await connection
             .createQueryBuilder()
