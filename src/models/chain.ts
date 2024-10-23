@@ -1,4 +1,5 @@
-import { Entity, Column, OneToMany, Relation, PrimaryColumn } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
+import type { Relation } from 'typeorm';
 import type { Token } from './token';
 
 @Entity()
