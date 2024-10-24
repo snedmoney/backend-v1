@@ -4,7 +4,7 @@
   "description": "Sned BE",
   "main": "index.ts",
   "scripts": {
-      "dev": "nodemon -r tsconfig-paths/register ./src/index.ts",
+      "dev": "nodemon --watch src --ext ts,json --exec 'tsup ./src/index.ts --format esm,cjs && npm run start'",
       "build": "rimraf ./dist && tsc",
       "start": "node ./dist/index.js",
       "seed:config": "TYPEORM_SEEDING_SEEDS=src/seeds/**/*{.ts,.js} ts-node ./node_modules/typeorm-seeding/dist/cli.js config",

@@ -168,12 +168,6 @@ export class TokenRoutes {
             perPage,
         });
 
-        if (tokens.length === 0) {
-            return res.status(400).json({
-                error: `No tokens found with chain ID ${chainId}`,
-            });
-        }
-
         res.status(200).json({
             tokens,
             page,
