@@ -4,9 +4,9 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  Relation,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 
 import type { Wallet } from './wallet';
 

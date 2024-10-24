@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "target": "es2022",
-        "module": "node16",
         "lib": ["ES2022"],
-        "moduleResolution": "NodeNext",
+        "module": "Preserve",
+        "moduleResolution": "Bundler",
         "rootDir": "src",
         "baseUrl": ".",
         "outDir": "dist",
@@ -22,6 +22,11 @@
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        // Allow JSON modules to be imported
+        "resolveJsonModule": true,
+        // Treat files as modules even if it doesn't use import/export
+        "moduleDetection": "force",
+
         "paths": {
             "@/*": ["src/*"]
         }

@@ -1,5 +1,4 @@
 import {
-  Relation,
   Entity,
   Column,
   PrimaryGeneratedColumn,
@@ -8,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import type { Wallet } from './wallet';
 
 @Entity()

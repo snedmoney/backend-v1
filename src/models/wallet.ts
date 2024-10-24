@@ -5,9 +5,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Relation,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 
 import type { User } from './user';
 

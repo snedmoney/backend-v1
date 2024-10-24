@@ -62,6 +62,7 @@ export class TokenRoutes {
             name: req.params?.name,
             address: req.params?.address,
             symbol: req.params?.symbol,
+            withBalance: Boolean(req.params?.withBalance) || true,
         });
 
         res.status(200).json({
@@ -166,6 +167,7 @@ export class TokenRoutes {
             chainId,
             page,
             perPage,
+            withBalance: Boolean(req.query?.withBalance) || true,
         });
 
         res.status(200).json({
