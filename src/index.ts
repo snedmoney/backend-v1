@@ -64,7 +64,7 @@ async function main() {
 
     // Middlewares
     app.use(helmet());
-    app.use(rateLimiter);
+    // app.use(rateLimiter);
     app.use('/api/authorize', authRouter.router);
 
     app.use('/api/tokens', tokenRoutes.router);
