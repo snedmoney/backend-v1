@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import express, { Express } from 'express';
 
 import { AppDataSource } from './data-source';
+import { AuthRoutes } from '@/routers/auth';
 import { ChainRoutes } from './routers/chains';
 // import authRouter from '@/routers/authorize';
 // import linkRouter from '@/routers/link';
@@ -25,7 +26,6 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 // import chainsRouter from '@/routers/chains';
 import { verifyToken } from '@/util/jwt';
-import { AuthRoutes } from './routers/auth';
 
 const app: Express = express();
 
@@ -38,7 +38,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:8002',
+                url: 'https://backend-staging-hc8j.onrender.com',
             },
         ],
     },
@@ -50,7 +50,7 @@ async function main() {
     const tokenRoutes = new TokenRoutes(dataSource);
     const chainRoutes = new ChainRoutes(dataSource);
     const walletRoutes = new WalletRoutes(dataSource);
-    const authRoutes = new AuthRoutes(dataSource);
+    const authRouter = new AuthRoutes(dataSource);
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -65,15 +65,16 @@ async function main() {
     // Middlewares
     app.use(helmet());
     app.use(rateLimiter);
-    app.use('/api/authorize', authRoutes.router);
+    app.use('/api/authorize', authRouter.router);
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
     app.use(verifyToken);
+    app.use('/api/wallets', walletRoutes.router);
+    // app.use('/api/chains', chainsRouter);
     // app.use('/api/link', linkRouter);
     // app.use('/api/setting', settingRouter);
     // app.use('/api/transaction', transactionRouter);
-    app.use('/api/wallet', walletRoutes.router);
 
     // Error handlers
     app.use(errorHandler());

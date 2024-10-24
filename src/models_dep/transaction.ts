@@ -1,13 +1,13 @@
 import {
   Column,
   CreateDateColumn,
-  Relation,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import type { Link } from './link';
 import type { Wallet } from './wallet';
 import type { TokenAccount } from './tokenAccount';
@@ -31,14 +31,14 @@ export class Transaction {
   id: number;
 
   @Column({
-    type: 'enum',
-    enum: TransactionType,
+      type: 'enum',
+      enum: TransactionType,
   })
   transactionType: TransactionType;
 
   @Column({
-    type: 'enum',
-    enum: StatusType,
+      type: 'enum',
+      enum: StatusType,
   })
   statusType: StatusType;
 
