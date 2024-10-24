@@ -3,10 +3,10 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  Relation,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import type { Chain } from './chain';
 
 @Entity()
@@ -28,6 +28,9 @@ export class Token {
 
   @Column()
   logoURI: string;
+
+  // @Column()
+  // popularityRank: number;
 
   @ManyToOne('Chain', 'tokens')
   @JoinColumn({ name: 'chainId' })

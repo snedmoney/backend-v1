@@ -1,8 +1,6 @@
 import { Token } from '@/models/token';
 import { DataSource, Repository } from 'typeorm';
-import { getConfig } from '@/util/config';
-import { ExtractAbiFunctionNames, Abi } from 'abitype';
-import { erc20Abi } from 'viem';
+import { erc20Abi, formatUnits } from 'viem';
 import getPublicClient from '@/util/client';
 
 type GetTokensOptions = {
@@ -16,6 +14,7 @@ type GetTokensOptions = {
 
 type GetTokensByChainOptions = {
     chainId: number;
+    walletAddress?: `0x${string}`;
     withBalance?: boolean;
     page: number;
     perPage: number;
@@ -25,20 +24,6 @@ type TokenWithBalance = Token & {
     balance: number;
     popularity?: number;
 };
-
-declare function readContract<
-    multicall3ABI extends Abi,
-    functionName extends ExtractAbiFunctionNames<
-        multicall3ABI,
-        'pure' | 'view'
-    >,
->(config: {
-    abi: multicall3ABI;
-    functionName:
-        | functionName
-        | ExtractAbiFunctionNames<multicall3ABI, 'pure' | 'view'>;
-    args: readonly unknown[];
-}): unknown;
 
 export class TokenService {
     private repo: Repository<Token>;
@@ -78,11 +63,8 @@ export class TokenService {
     async getTokensByChain(
         options: GetTokensByChainOptions
     ): Promise<Token[] | TokenWithBalance[]> {
-        let tokens: Token[] | TokenWithBalance[];
-        if (options.withBalance) {
-            const { multicall } = await import('@wagmi/core');
-            const config = await getConfig();
-
+        let tokens: Token[] | TokenWithBalance[] = [];
+        if (options.withBalance && options.walletAddress) {
             const [queriedTokens] = await this.repo.findAndCount({
                 where: {
                     chain: {
@@ -91,38 +73,38 @@ export class TokenService {
                 },
             });
 
-            const erc20ABI = [
-                'function balanceOf(address owner) view returns (uint256)',
-                'function decimals() view returns (uint8)',
-            ];
-
             const client = getPublicClient(options.chainId);
 
-            console.log(client);
+            const calls = queriedTokens?.map((token) => {
+                return {
+                    abi: erc20Abi,
+                    functionName: 'balanceOf',
+                    args: [options.walletAddress],
+                    address: token.address as `0x${string}`,
+                };
+            });
 
-            // const balanceRequests = queriedTokens.map((queriedToken) =>
-            //     getBalance(config, {
-            //         address: '0x4557B18E779944BFE9d78A672452331C186a9f48',
-            //         token: queriedToken.address as `0x${string}`,
-            //     })
-            // );
+            const result = await client.multicall({ contracts: calls });
+            queriedTokens?.forEach((token, i) => {
+                const balanceResult = result[i];
+                if (balanceResult.status === 'success') {
+                    const balance = formatUnits(
+                        balanceResult.result as bigint,
+                        token.decimals
+                    );
 
-            // const responses = await Promise.all(balanceRequests);
+                    tokens.push({
+                        ...token,
+                        balance: parseInt(balance),
+                    });
+                }
+            });
 
-            // tokens = queriedTokens
-            //     .slice(
-            //         (options.page - 1) * options.perPage,
-            //         options.page * options.perPage
-            //     )
-            //     .map((token) => {
-            //         const tokenBalance = responses.find(
-            //             (balance) => balance.symbol === token.symbol
-            //         );
-            //         return {
-            //             ...token,
-            //             balance: tokenBalance,
-            //         };
-            //     });
+            // Sort by balance in descending order (highest balance to lowest balance)
+            (tokens as TokenWithBalance[]).sort(
+                (a, b) => b.balance - a.balance
+            );
+            // TODO: Then sort by token popularity
         } else {
             const [queriedTokens] = await this.repo.findAndCount({
                 take: options.perPage,

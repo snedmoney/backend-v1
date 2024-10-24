@@ -1,6 +1,6 @@
 import { Chain } from '../models/chain';
 import { Token } from '../models/token';
-import fs from 'fs';
+import { readFileSync, readdirSync } from 'fs';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
 
@@ -35,11 +35,30 @@ type ChainJSON = {
 };
 type ChainsJSON = Record<string, ChainJSON>;
 
+const chainToPopularityUrl = {
+    1: 'https://eth.blockscout.com/api/v2/tokens?items_count=1050',
+};
+
+// Returns a map of token symbol to its popularity rank
+async function fetchPopularity(
+    chainId: number
+): Promise<Record<string, number>> {
+    const popularityUrl = chainToPopularityUrl[chainId];
+    if (popularityUrl) {
+        const res = await fetch(popularityUrl);
+        const data = (await res.json()) as { items: any[] };
+
+        console.log(data?.items);
+    }
+
+    return {};
+}
+
 export default class SeedTokens implements Seeder {
     public async run(_: Factory, connection: Connection): Promise<any> {
         let chainMap: Map<number, Chain> = new Map();
 
-        const chainsData = fs.readFileSync('src/static/chains.json', 'utf-8');
+        const chainsData = readFileSync('src/static/chains.json', 'utf-8');
         const chainsJSON: ChainsJSON = JSON.parse(chainsData);
         const chains: Partial<Chain>[] = Object.keys(chainsJSON).map((key) => {
             const chain = chainsJSON[key];
@@ -67,10 +86,11 @@ export default class SeedTokens implements Seeder {
             .execute();
 
         let tokens: Partial<Token>[] = [];
-        fs.readdirSync('src/static/tokens').forEach((tokenFileName) => {
-            console.log('reading ', tokenFileName);
+        const popularityMap = await fetchPopularity(1);
+        console.log(popularityMap);
 
-            const data = fs.readFileSync(
+        readdirSync('src/static/tokens').forEach(async (tokenFileName) => {
+            const data = readFileSync(
                 `src/static/tokens/${tokenFileName}`,
                 'utf-8'
             );
