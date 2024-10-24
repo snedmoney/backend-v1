@@ -30,6 +30,9 @@ export class ChainService {
         const [chains] = await this.repo.findAndCount({
             take: options.perPage,
             skip: (options.page - 1) * options.perPage,
+            where: {
+                allowed: true
+            }
         });
 
         return chains;

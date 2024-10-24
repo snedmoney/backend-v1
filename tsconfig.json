@@ -2,8 +2,8 @@
     "compilerOptions": {
         "target": "es2022",
         "lib": ["ES2022"],
-        "module": "Preserve",
-        "moduleResolution": "Bundler",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "rootDir": "src",
         "baseUrl": ".",
         "outDir": "dist",
@@ -28,7 +28,8 @@
         "moduleDetection": "force",
 
         "paths": {
-            "@/*": ["src/*"]
+            "@/*": ["src/*"],
+            "cheerio": ["./node_modules/cheerio/lib/index.d.ts"]
         }
     },
     "include": ["src/**/*", "__tests__/**/*"],

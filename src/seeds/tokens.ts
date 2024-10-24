@@ -3,6 +3,7 @@ import { Token } from '../models/token';
 import { readFileSync, readdirSync } from 'fs';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
+import * as cheerio from 'cheerio';
 
 type TokenJSON = {
     id: number;
@@ -33,36 +34,58 @@ type ChainJSON = {
         decimals: number;
     };
 };
-type ChainsJSON = Record<string, ChainJSON>;
+type ChainsJSON = ChainJSON[];
 
 const chainToPopularityUrl = {
-    1: 'https://eth.blockscout.com/api/v2/tokens?items_count=1050',
+    1: 'https://www.coingecko.com/en/categories/ethereum-ecosystem',
+    42161: 'https://www.coingecko.com/en/chains/arbitrum-one',
+    8453: 'https://www.coingecko.com/en/categories/base-ecosystem',
+    65: 'https://www.coingecko.com/en/categories/binance-smart-chain',
+    43114: 'https://www.coingecko.com/en/chains/avalanche-network',
+    137: 'https://www.coingecko.com/en/categories/polygon-ecosystem',
+    10: 'https://www.coingecko.com/en/categories/optimism-ecosystem',
 };
 
 // Returns a map of token symbol to its popularity rank
-async function fetchPopularity(
-    chainId: number
-): Promise<Record<string, number>> {
+async function fetchPopularity(chainId: number): Promise<string> {
     const popularityUrl = chainToPopularityUrl[chainId];
     if (popularityUrl) {
         const res = await fetch(popularityUrl);
-        const data = (await res.json()) as { items: any[] };
+        const data = await res.text();
 
-        console.log(data?.items);
+        return data;
     }
 
-    return {};
+    return '';
+}
+
+async function scrapeRankingTokens(chainId: number): Promise<string[]> {
+    if (!chainToPopularityUrl[chainId]) return [];
+    const popularTokensHtml = await fetchPopularity(chainId);
+
+    const $ = cheerio.load(popularTokensHtml);
+
+    const rankedSymbols = $('tbody')
+        .children('tr')
+        .map((_, node) => {
+            const symbol = $(node).find('td:nth-child(3) a div div div').text();
+
+            return symbol.trim();
+        })
+        .toArray();
+
+    return rankedSymbols;
 }
 
 export default class SeedTokens implements Seeder {
+    // @ts-ignore
     public async run(_: Factory, connection: Connection): Promise<any> {
         let chainMap: Map<number, Chain> = new Map();
+        let popularTokensMap: Map<number, string[]> = new Map();
 
         const chainsData = readFileSync('src/static/chains.json', 'utf-8');
         const chainsJSON: ChainsJSON = JSON.parse(chainsData);
-        const chains: Partial<Chain>[] = Object.keys(chainsJSON).map((key) => {
-            const chain = chainsJSON[key];
-
+        const chains: Partial<Chain>[] = chainsJSON.map((chain) => {
             const row = {
                 id: chain.networkId,
                 name: chain.name,
@@ -78,6 +101,14 @@ export default class SeedTokens implements Seeder {
             return row;
         });
 
+        const rankedRequests = chains.map(async (chain) => {
+            const rankedSymbols = await scrapeRankingTokens(chain.id);
+            if (rankedSymbols.length)
+                popularTokensMap.set(chain.id, rankedSymbols);
+        });
+
+        await Promise.allSettled(rankedRequests);
+
         await connection
             .createQueryBuilder()
             .insert()
@@ -86,8 +117,6 @@ export default class SeedTokens implements Seeder {
             .execute();
 
         let tokens: Partial<Token>[] = [];
-        const popularityMap = await fetchPopularity(1);
-        console.log(popularityMap);
 
         readdirSync('src/static/tokens').forEach(async (tokenFileName) => {
             const data = readFileSync(
@@ -99,9 +128,23 @@ export default class SeedTokens implements Seeder {
             // // @ts-expect-error chain has null tokens
             Object.keys(tokensJSON)
                 .filter((key) => tokensJSON[key].logoURI)
-                .forEach((key, i) => {
-                    if (i === 63) console.log(tokensJSON[key]);
+                .forEach((key) => {
                     const token = tokensJSON[key];
+
+                    let tokenRank;
+                    if (popularTokensMap.has(token.chainId)) {
+                        const tokenRankIndex = popularTokensMap
+                            .get(token.chainId)
+                            .findIndex(
+                                (popularTokenSymbol) =>
+                                    popularTokenSymbol === token.symbol
+                            );
+                        if (tokenRankIndex >= 0) console.log(tokenRankIndex);
+                        tokenRank =
+                            tokenRankIndex === -1 ? 999 : tokenRankIndex;
+                    } else {
+                        tokenRank = 999;
+                    }
 
                     tokens.push({
                         decimals: token.decimals,
@@ -111,6 +154,7 @@ export default class SeedTokens implements Seeder {
                         symbol: token.symbol,
                         chain: chainMap.get(token.chainId),
                         chainId: token.chainId,
+                        popularityRank: tokenRank,
                     });
                 });
         });

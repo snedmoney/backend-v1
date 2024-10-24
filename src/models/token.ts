@@ -29,8 +29,8 @@ export class Token {
   @Column()
   logoURI: string;
 
-  // @Column()
-  // popularityRank: number;
+  @Column({ nullable: true })
+  popularityRank: number;
 
   @ManyToOne('Chain', 'tokens')
   @JoinColumn({ name: 'chainId' })
