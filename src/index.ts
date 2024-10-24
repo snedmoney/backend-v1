@@ -7,7 +7,7 @@ import 'reflect-metadata';
 import express, { Express } from 'express';
 
 import { AppDataSource } from './data-source';
-import { AuthRoutes } from '@/routers/auth';
+import { AuthRoutes } from '@/routers/authorize';
 import { ChainRoutes } from './routers/chains';
 // import authRouter from '@/routers/authorize';
 // import linkRouter from '@/routers/link';
@@ -26,6 +26,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 // import chainsRouter from '@/routers/chains';
 import { verifyToken } from '@/util/jwt';
+import { PriceRoutes } from './routers/price';
 
 const app: Express = express();
 
@@ -51,6 +52,7 @@ async function main() {
     const chainRoutes = new ChainRoutes(dataSource);
     const walletRoutes = new WalletRoutes(dataSource);
     const authRouter = new AuthRoutes(dataSource);
+    const priceRoutes = new PriceRoutes();
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -64,11 +66,12 @@ async function main() {
 
     // Middlewares
     app.use(helmet());
-    // app.use(rateLimiter);
+    app.use(rateLimiter);
     app.use('/api/authorize', authRouter.router);
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
+    app.use('/api/price', priceRoutes.router);
     app.use(verifyToken);
     app.use('/api/wallets', walletRoutes.router);
     // app.use('/api/chains', chainsRouter);
