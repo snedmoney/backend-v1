@@ -9,14 +9,9 @@ const linkSchema = z.object({
     type: z.enum(['tip', 'donation', 'payment'], {
         required_error: 'type is required',
     }) as z.ZodType<LinkType>,
-    name: z.string({
-        required_error: 'name is required',
-    }),
+    userId: z.bigint().optional(),
     description: z.string({
         required_error: 'description is required',
-    }),
-    imageUrl: z.string({
-        required_error: 'imageUrl is required',
     }),
     acceptUntil: z.date().optional(),
     goalAmount: z.number().optional(),
@@ -45,9 +40,12 @@ export class LinkRoutes {
         const page = parseInt(req.query.page as string) || 1;
         const perPage = parseInt(req.query.per_page as string) || 20;
 
+        const username = req.query?.username as string;
+
         const links = await this.linkService.getLinks({
             page,
             perPage,
+            username,
         });
 
         res.status(200).json({
@@ -83,8 +81,7 @@ export class LinkRoutes {
         const body = req.body as z.infer<typeof linkSchema>;
         try {
             const createdLink = await this.linkService.createLink({
-                name: body.name,
-                imageUrl: body.imageUrl,
+                userId: body.userId,
                 description: body.description,
                 type: body.type,
                 acceptUntil: body.acceptUntil,

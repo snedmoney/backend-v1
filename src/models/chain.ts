@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import type { Relation } from 'typeorm';
 import type { Token } from './token';
+import type { Link } from './link';
 
 @Entity()
 export class Chain {
@@ -29,4 +30,7 @@ export class Chain {
 
     @OneToMany('Token', 'chain')
     tokens: Relation<Token[]>;
+
+    @OneToMany('Link', 'destinationChain')
+    links: Relation<Link[]>;
 }

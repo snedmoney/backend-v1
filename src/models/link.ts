@@ -2,7 +2,6 @@ import {
   Entity,
   Column,
   OneToMany,
-  PrimaryColumn,
   ManyToOne,
   CreateDateColumn,
   JoinColumn,
@@ -12,10 +11,11 @@ import type { Relation } from 'typeorm';
 import type { Token } from './token';
 import { Chain } from './chain';
 import { Wallet } from './wallet';
+import { User } from './user';
 
 export enum LinkType {
   DONATION = 'donation',
-  TIP = 'tip',
+  PROFILE = 'profile',
   PAYMENT = 'payment',
 }
 
@@ -31,13 +31,7 @@ export class Link {
   type: LinkType;
 
   @Column()
-  name: string;
-
-  @Column()
   description: string;
-
-  @Column()
-  imageUrl: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
@@ -60,6 +54,8 @@ export class Link {
   destinationChain: Relation<Chain>;
 
   @OneToMany('Wallet', 'id', { cascade: true })
-  @JoinColumn({ name: 'id' })
   destinationWallet: Relation<Wallet>;
+
+  @ManyToOne('User', 'links', { cascade: true })
+  user: Relation<User>;
 }

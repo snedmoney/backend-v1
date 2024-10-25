@@ -1,18 +1,19 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { Link, LinkType } from '@/models/link';
 import { Chain } from '@/models/chain';
 import { Token } from '@/models/token';
+import { User } from '@/models/user';
 
 type GetLinksOption = {
     perPage: number;
     page: number;
+    username?: string;
 };
 
 type CreateLinkArgs = {
     type: LinkType;
-    name: string;
+    userId?: bigint;
     description: string;
-    imageUrl: string;
     acceptUntil: Date;
     goalAmount?: number;
     destinationTokenAddress?: string;
@@ -24,6 +25,7 @@ export class LinkService {
     private repo: Repository<Link>;
     private chainRepo: Repository<Chain>;
     private tokenRepo: Repository<Token>;
+    private userRepo: Repository<User>;
 
     constructor(dataSource: DataSource) {
         this.repo = dataSource.getRepository(Link);
@@ -35,6 +37,16 @@ export class LinkService {
         const [links] = await this.repo.findAndCount({
             take: options.perPage,
             skip: (options.page - 1) * options.perPage,
+            relations: ['destinationToken', 'destinationChain'],
+            ...(options?.username
+                ? {
+                      where: {
+                          user: {
+                              userName: Like(`%${options.username}`),
+                          },
+                      },
+                  }
+                : {}),
         });
 
         return links;
@@ -45,6 +57,7 @@ export class LinkService {
             where: {
                 id,
             },
+            relations: ['destinationToken', 'destinationChain'],
         });
 
         return link;
@@ -66,13 +79,21 @@ export class LinkService {
         });
         if (!destinationToken) return null;
 
+        let user;
+        if (args.userId) {
+            user = await this.userRepo.findOne({
+                where: {
+                    id: args.userId,
+                },
+            });
+        }
+
         const link = this.repo.create({
-            name: args.name,
+            user,
             description: args.description,
             type: args.type,
             acceptUntil: args.acceptUntil,
             goalAmount: args.goalAmount,
-            imageUrl: args.imageUrl,
             destinationChain: chain,
             destinationToken,
         });

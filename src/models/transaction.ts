@@ -12,6 +12,7 @@ import type { Token } from './token';
 import { Chain } from './chain';
 import { Wallet } from './wallet';
 import { Link } from './link';
+import { User } from './user';
 
 export enum TransactionType {
   DONATION = 'donation',
@@ -23,6 +24,7 @@ export enum TransactionStatus {
   PENDING = 'pending',
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
+  FAILED = 'failed',
 }
 
 @Entity()
@@ -89,13 +91,16 @@ export class Transaction {
   @JoinColumn({ name: 'id' })
   walletId: Relation<Wallet>;
 
-  @OneToMany('Wallet', 'id')
+  @OneToMany('Link', 'id')
   @JoinColumn({ name: 'id' })
   linkId: Relation<Link>;
 
-  @Column()
+  @OneToMany('User', 'id')
+  user: Relation<User>;
+
+  @Column({ nullable: true })
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   message: string;
 }

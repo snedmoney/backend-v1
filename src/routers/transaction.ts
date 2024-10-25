@@ -16,12 +16,9 @@ const transactionSchema = z.object({
     linkId: z.string({
         required_error: 'linkId is required',
     }), // must provide from FE
-    name: z.string({
-        required_error: 'name is required',
-    }), // / must provide  from FE
-    message: z.string({
-        required_error: 'message is required',
-    }), // / must provide  from FE
+    userId: z.bigint().optional(), // / must provide  from FE
+    name: z.string().optional(),
+    message: z.string().optional(), // / must provide  from FE
 });
 
 export class TransactionRoutes {
@@ -57,18 +54,18 @@ export class TransactionRoutes {
             } catch (err) {}
         }
 
-        const chains = await this.transactionService.getTransactions({
+        const transactions = await this.transactionService.getTransactions({
             page,
             perPage,
-            from,
-            to,
+            ...(from && { from }),
+            ...(to && { to }),
         });
 
         res.status(200).json({
-            chains,
+            items: transactions,
             page,
             per_page: perPage,
-            count: chains.length,
+            count: transactions.length,
         });
     };
 
@@ -113,7 +110,7 @@ export class TransactionRoutes {
                     linkId: body.linkId,
                     id: body.id,
                     message: body.message,
-                    name: body.name,
+                    userId: body.userId,
                     type: body.type,
                 });
             return res.status(201).json({
