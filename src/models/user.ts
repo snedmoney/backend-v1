@@ -4,17 +4,14 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  UpdateDateColumn
 } from 'typeorm';
-import type { Relation } from 'typeorm';
 
-import type { Wallet } from './wallet';
 import type { Link } from './link';
-
-export enum UserRole {
-  CREATOR = 'creator',
-  FOLLOWER = 'follower',
-}
+import { PaymentMethod } from './paymentMethod';
+import type { Relation } from 'typeorm';
+import { Social } from './social';
+import type { Wallet } from './wallet';
 
 @Entity('user')
 export class User {
@@ -22,10 +19,7 @@ export class User {
   id: bigint;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  firstName: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  lastName: string;
+  name: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   userName: string;
@@ -36,8 +30,29 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   profileURI: string;
 
-  @OneToMany('Wallet', 'wallet')
+  @OneToMany('Wallet', 'user', {
+      cascade: true,
+  })
   wallets: Relation<Wallet[]>;
+
+  @OneToMany('Social', 'user', {
+      cascade: true
+  })
+  socials: Relation<Social[]>;
+
+  @OneToMany('PaymentMethod', 'user', {
+      cascade: true,
+  })
+  paymentMethods: Relation<PaymentMethod[]>;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  slogan: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  about: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  websiteLink: string;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
