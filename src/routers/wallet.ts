@@ -19,12 +19,24 @@ export class WalletRoutes {
         this.router.get('/', this.getWallets);
     }
 
+        /**
+     * @swagger
+     * components:
+     *   securitySchemes:
+     *     BearerAuth:
+     *       type: http
+     *       scheme: bearer
+     *       bearerFormat: JWT
+     */
+
     /**
      * @swagger
      * /api/wallets/:
      *   get:
      *     summary: Get a list of wallets
      *     description: Retrieve a paginated list of wallets
+     *     security:
+     *       - BearerAuth: []
      *     parameters:
      *       - in: query
      *         name: page
@@ -100,6 +112,8 @@ export class WalletRoutes {
      *   get:
      *     summary: Get a wallet by ID
      *     description: Retrieve a wallet by its unique ID
+     *     security:
+     *       - BearerAuth: []
      *     parameters:
      *       - in: path
      *         name: id
@@ -159,6 +173,8 @@ export class WalletRoutes {
      *   get:
      *     summary: Get a wallet by address
      *     description: Retrieve a wallet by its unique address
+     *     security:
+     *       - BearerAuth: []
      *     parameters:
      *       - in: path
      *         name: address
