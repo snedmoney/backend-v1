@@ -77,6 +77,9 @@ CREATE TABLE user (
     email VARCHAR(255),
     profileURI VARCHAR(255),
     walletId BIGINT,
+    slogan VARCHAR(255),
+    about TEXT,
+    websiteLink VARCHAR(255),
     FOREIGN KEY (walletId) REFERENCES wallet(id)
 );
 
@@ -119,3 +122,26 @@ CREATE TABLE message (
     FOREIGN KEY (linkId) REFERENCES link(id),
     FOREIGN KEY (userId) REFERENCES user(id)
 );
+
+-- Create payment_method table
+CREATE TABLE payment_method (
+    id BIGINT PRIMARY KEY,
+    chainId BIGINT,
+    linkId BIGINT,
+    userId BIGINT,
+    FOREIGN KEY (chainId) REFERENCES chain(id),
+    FOREIGN KEY (linkId) REFERENCES link(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
+);
+
+/*
+-- Create tip table
+CREATE TABLE tip (
+    id BIGINT PRIMARY KEY NOT NULL,
+    amount FLOAT8,
+    tokenId BIGINT,
+    linkId BIGINT,
+    FOREIGN KEY (tokenId) REFERENCES token(id),
+    FOREIGN KEY (linkId) REFERENCES link(id)
+);
+*/

@@ -7,3 +7,5 @@ export { Wallet } from './wallet';
 export { Token } from './token';
 export { Chain } from './chain';
 export { User } from './user';
+export { PaymentMethod } from './paymentMethod';
+export { Social } from './social';
