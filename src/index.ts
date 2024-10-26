@@ -1,7 +1,3 @@
-if (process.env.NODE_ENV === 'production') {
-    require('module-alias/register');
-}
-
 import 'reflect-metadata';
 
 import express, { Express } from 'express';
@@ -10,8 +6,8 @@ import { AppDataSource } from './data-source';
 import { AuthRoutes } from '@/routers/authorize';
 import { ChainRoutes } from './routers/chains';
 // import authRouter from '@/routers/authorize';
-// import linkRouter from '@/routers/link';
-// import transactionRouter from '@/routers/transaction';
+import { LinkRoutes } from '@/routers/link';
+import { TransactionRoutes } from '@/routers/transaction';
 import { TokenRoutes } from '@/routers/tokens';
 // import settingRouter from '@/routers/setting';
 import { WalletRoutes } from '@/routers/wallet';
@@ -53,6 +49,8 @@ async function main() {
     const walletRoutes = new WalletRoutes(dataSource);
     const authRouter = new AuthRoutes(dataSource);
     const priceRoutes = new PriceRoutes();
+    const linkRoutes = new LinkRoutes(dataSource);
+    const transactionsRoutes = new TransactionRoutes(dataSource);
 
     const swaggerSpec = swaggerJSDoc(swaggerOptions);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -72,12 +70,13 @@ async function main() {
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
     app.use('/api/price', priceRoutes.router);
+    app.use('/api/links', linkRoutes.router);
+    app.use('/api/transactions', transactionsRoutes.router);
     app.use(verifyToken);
     app.use('/api/wallets', walletRoutes.router);
-    // app.use('/api/chains', chainsRouter);
-    // app.use('/api/link', linkRouter);
+    // app.use('/api/link', linkRoutes.router);
+    // app.use('/api/transactions', transactionsRoutes.router);
     // app.use('/api/setting', settingRouter);
-    // app.use('/api/transaction', transactionRouter);
 
     // Error handlers
     app.use(errorHandler());

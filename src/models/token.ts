@@ -2,12 +2,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToMany,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
 import type { Chain } from './chain';
+import type { Link } from './link';
 
 @Entity()
 export class Token {
@@ -35,6 +35,9 @@ export class Token {
   @ManyToOne('Chain', 'tokens')
   @JoinColumn({ name: 'chainId' })
   chain: Relation<Chain>;
+
+  @ManyToOne('Link', 'id')
+  links: Relation<Link[]>;
 
   @Column()
   chainId: number;

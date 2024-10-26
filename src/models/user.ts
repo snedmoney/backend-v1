@@ -9,6 +9,7 @@ import {
 import type { Relation } from 'typeorm';
 
 import type { Wallet } from './wallet';
+import type { Link } from './link';
 
 export enum UserRole {
   CREATOR = 'creator',
@@ -43,4 +44,7 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
+
+  @OneToMany('Link', 'user')
+  links: Relation<Link[]>;
 }
