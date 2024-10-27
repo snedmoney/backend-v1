@@ -30,81 +30,80 @@ export class UserRoutes {
         this.router.get('/:id', this.getUserProfile);
         this.router.get('username/:username', this.getUserByUserName);
         this.router.post('/', this.createUserProfile);
-
     }
 
     /**
- * @swagger
- * /api/users/username/{username}:
- *   get:
- *     summary: Get User by Username
- *     description: Retrieve user details by their username.
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - name: username
- *         in: path
- *         required: true
- *         description: The username of the user to retrieve.
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: User details retrieved successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   type: object
- *                   properties:
- *                     userName:
- *                       type: string
- *                       description: The username of the user.
- *                     name:
- *                       type: string
- *                       description: The full name of the user.
- *                     about:
- *                       type: string
- *                       description: A short description about the user.
- *                     slogan:
- *                       type: string
- *                       description: A catchy slogan or tagline for the user.
- *                     walletAddress:
- *                       type: string
- *                       description: The wallet address of the user.
- *                     paymentMethods:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           chainId:
- *                             type: string
- *                             description: The ID of the blockchain.
- *                           tokenAddress:
- *                             type: string
- *                             description: The address of the payment token.
- *                 preferredPaymentMethods:
- *                   type: array
- *                   items:
- *                     type: object
- *       '404':
- *         description: User not found.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: User not found.
- */
+     * @swagger
+     * /api/users/username/{username}:
+     *   get:
+     *     summary: Get User by Username
+     *     description: Retrieve user details by their username.
+     *     security:
+     *       - BearerAuth: []
+     *     parameters:
+     *       - name: username
+     *         in: path
+     *         required: true
+     *         description: The username of the user to retrieve.
+     *         schema:
+     *           type: string
+     *     responses:
+     *       '200':
+     *         description: User details retrieved successfully.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 user:
+     *                   type: object
+     *                   properties:
+     *                     userName:
+     *                       type: string
+     *                       description: The username of the user.
+     *                     name:
+     *                       type: string
+     *                       description: The full name of the user.
+     *                     about:
+     *                       type: string
+     *                       description: A short description about the user.
+     *                     slogan:
+     *                       type: string
+     *                       description: A catchy slogan or tagline for the user.
+     *                     walletAddress:
+     *                       type: string
+     *                       description: The wallet address of the user.
+     *                     paymentMethods:
+     *                       type: array
+     *                       items:
+     *                         type: object
+     *                         properties:
+     *                           chainId:
+     *                             type: string
+     *                             description: The ID of the blockchain.
+     *                           tokenAddress:
+     *                             type: string
+     *                             description: The address of the payment token.
+     *                 preferredPaymentMethods:
+     *                   type: array
+     *                   items:
+     *                     type: object
+     *       '404':
+     *         description: User not found.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 error:
+     *                   type: string
+     *                   example: User not found.
+     */
 
     getUserByUserName = async (req, res) => {
         const { userName = '' } = req.params;
         const user = this.userService.getUserByUserName(userName);
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 error: 'User not found',
             });
@@ -112,7 +111,7 @@ export class UserRoutes {
         return res.status(200).json({
             user,
         });
-    }
+    };
 
     /**
      * @swagger
@@ -183,7 +182,9 @@ export class UserRoutes {
             });
         }
 
-        const user = await this.userService.getUserById(userId, ['PaymentMethods']);
+        const user = await this.userService.getUserById(userId, [
+            'PaymentMethods', 'Socials'
+        ]);
 
         if (!user) {
             return res.status(404).json({
@@ -191,10 +192,9 @@ export class UserRoutes {
             });
         }
 
-        return {
+        return res.status(200).json({
             user,
-            preferredPaymentMethods: user.paymentMethods,
-        };
+        });
     };
     /**
      * @swagger
@@ -320,65 +320,36 @@ export class UserRoutes {
                 error: 'Invalid chain id',
             });
         }
-        
-        const token = await this.tokenService.getTokenByAddress(tokenAddress.trim());
+
+        const token = await this.tokenService.getTokenByAddress(
+            tokenAddress.trim()
+        );
 
         const user = wallet.user ?? new User();
 
         const paymentMethod = new PaymentMethod();
 
-        const youtube = new Social();
-        const facebook = new Social();
-        const twitter = new Social();
-        const instagram = new Social();
-        const discord = new Social();
-        const tiktok = new Social();
-        const link1 = new Social();
-        const link2 = new Social();
+        const socialPlatforms = [
+            'youtube',
+            'facebook',
+            'twitter',
+            'instagram',
+            'discord',
+            'tiktok',
+            'url',
+            'link2',
+        ];
 
-        if(socialAccounts?.youtube){
-            youtube.url = socialAccounts.youtube;
-            youtube.name = 'YouTube';
-        }
-        if(socialAccounts?.facebook){
-            facebook.name = 'Facebook';
-            facebook.url = socialAccounts.facebook;
-        }
-        if(socialAccounts?.twitter){
-            twitter.name = 'Twitter';
-            twitter.url = socialAccounts.twitter;
-        }
-        if(socialAccounts?.instagram){
-            instagram.name = 'Instagram';
-            instagram.url = socialAccounts.instagram;
-        }
-        if(socialAccounts?.discord){
-            discord.name = 'Discord';
-            discord.url = socialAccounts.discord;
-        }
-        if(socialAccounts?.tiktok){
-            tiktok.name = 'TikTok';
-            tiktok.url = socialAccounts.tiktok;
-        }
-        if(socialAccounts?.url){
-            link1.name = 'Other';
-            link1.url = socialAccounts.url;
-        }
-        if(socialAccounts?.link2){
-            link2.name = 'Other';
-            link2.url = socialAccounts.link2;
-        }
-
-        const userSocials = [
-            youtube,
-            facebook,
-            twitter,
-            instagram,
-            discord,
-            tiktok,
-            link1,
-            link2,
-        ].filter(Boolean);
+        const userSocials = socialPlatforms
+            .map((socialPlatform) => {
+                if (socialAccounts?.[socialPlatform]) {
+                    const social = new Social();
+                    social.name = `${socialPlatform.charAt(0).toLocaleUpperCase()}${socialPlatform.slice(1)}`;
+                    social.url = socialAccounts[socialPlatform];
+                    return social;
+                }
+            })
+            .filter(Boolean);
 
         if (chain) {
             paymentMethod.chain = chain;
@@ -387,46 +358,18 @@ export class UserRoutes {
         if (token) {
             paymentMethod.token = token;
         }
-        
-        if (userName) {
-            user.userName = userName;
-        }
 
-        if (name) {
-            user.name = name;
-        }
+        user.userName = userName || user.userName;
+        user.name = name || user.name;
+        user.about = about || user.about;
+        user.slogan = slogan || user.slogan;
+        user.paymentMethods = [...(user?.paymentMethods ?? []), paymentMethod];
+        user.websiteLink = websiteLink || user.websiteLink;
+        user.socials = [...(user?.socials ?? []), ...userSocials];
 
-        if (about) {
-            user.about = about;
-        }
-
-        if (slogan) {
-            user.slogan = slogan;
-        }
-
-        if (paymentMethod) {
-            user.paymentMethods = [...(user?.paymentMethods ?? []), paymentMethod];
-        }
-
-        if (websiteLink) {
-            user.websiteLink = websiteLink;
-        }
-
-        if (userSocials.length > 0) {
-            user.socials = userSocials;
-        }
-
-        if(!wallet.user){
-            const savedUser = await this.userService.createUser(user);
-            return res.status(200).json({
-                savedUser,
-            });
-        }
-        
-        const updatedUser = await this.userService.updateUser(user);
-
+        const savedUser = await this.userService.createUser(user);
         return res.status(200).json({
-            updatedUser,
+            savedUser,
         });
     };
 }

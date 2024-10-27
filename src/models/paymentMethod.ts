@@ -29,8 +29,7 @@ export class PaymentMethod {
   @JoinColumn({ name: 'tokenId' })
   token: Relation<Token>;
 
-  @ManyToOne('User', 'paymentMethods')
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.paymentMethods)
   user: Relation<User>;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

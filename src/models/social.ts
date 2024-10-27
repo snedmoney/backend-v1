@@ -22,8 +22,7 @@ export class Social {
   @Column({ type: 'varchar', length: 255, nullable: false })
   url: string;
 
-  @ManyToOne('User', 'socials')
-  @JoinColumn({ name: 'userId' })
+  @ManyToOne(() => User, (user) => user.socials)
   user: Relation<User>;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

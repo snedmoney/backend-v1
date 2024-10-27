@@ -9,7 +9,10 @@ export class UserService {
         this.repository = dataSource.getRepository(User);
     }
 
-    getUserById = async (id: bigint, relations?: ['Wallets' | 'PaymentMethods']) => {
+    getUserById = async (
+        id: bigint,
+        relations?: ('Wallets' |'PaymentMethods' | 'Socials')[]
+    ) => {
         const user = await this.repository.findOne({
             where: {
                 id,
@@ -17,7 +20,8 @@ export class UserService {
             relations: {
                 wallets: relations?.includes('Wallets'),
                 paymentMethods: relations?.includes('PaymentMethods'),
-            }
+                socials: relations?.includes('Socials')
+            },
         });
         return user;
     };
@@ -32,23 +36,25 @@ export class UserService {
         return user;
     };
 
-    getUserByWalletAddress = async (walletAddress: string) => {
+    getUserByWalletAddress = async (walletAddress: string,
+        relations?: ('Wallets' | 'PaymentMethods' | 'Socials')[]) => {
         const user = await this.repository.findOne({
             where: {
                 wallets: {
-                    address: walletAddress
-                }
-            }
+                    address: walletAddress,
+                },
+            },
+            relations: {
+                wallets: relations?.includes('Wallets'),
+                paymentMethods: relations?.includes('PaymentMethods'),
+                socials: relations?.includes('Socials')
+            },
         });
 
         return user;
-    }
+    };
 
     createUser = async (user: User) => {
         return this.repository.save(user);
     };
-
-    updateUser = async (user: User) => {
-        return this.repository.update([user.id.toString()], user);
-    }
 }

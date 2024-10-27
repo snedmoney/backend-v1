@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 import type { Relation } from 'typeorm';
-import type { User } from './user';
+import { User } from './user';
 
 @Entity()
 export class Wallet {
@@ -19,10 +19,9 @@ export class Wallet {
   @Column({ type: 'varchar', length: 255, nullable: true })
   address: string;
 
-  @ManyToOne('User', 'user', {
-      cascade: true,
+  @ManyToOne(() => User, user => user.wallets, {
+      cascade: true
   })
-  @JoinColumn({ name: 'userId' })
   user: Relation<User>;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
