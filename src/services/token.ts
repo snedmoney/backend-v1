@@ -1,6 +1,5 @@
-import { DataSource, Repository } from 'typeorm';
-
 import { Token } from '@/models/token';
+import { DataSource, Like, Repository } from 'typeorm';
 
 type GetTokensOptions = {
     perPage: number;
@@ -49,13 +48,14 @@ export class TokenService {
         return tokens;
     }
 
-    async searchTokens(query: string): Promise<Token[]> {
-        const tokens = await this.repo.manager
-            .createQueryBuilder()
-            .select('tokens')
-            .from(Token, 'tokens')
-            .where(`tokens.name ILIKE '%${query}%'`)
-            .getMany();
+    async searchTokens(chainId: number, query: string): Promise<Token[]> {
+        const tokens = await this.repo.find({
+            where: {
+                name: Like(`%${query}%`),
+                chainId,
+            },
+        });
+
         return tokens;
     }
 
@@ -81,8 +81,8 @@ export class TokenService {
         const token = await this.repo.findOne({
             where: {
                 address,
-            }
-        })
+            },
+        });
         return token;
-    }
+    };
 }

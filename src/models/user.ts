@@ -4,7 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 
 import type { Link } from './link';
@@ -30,13 +30,11 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   profileURI: string;
 
-  @OneToMany('Wallet', 'user', {
-      cascade: true,
-  })
+  @OneToMany('Wallet', 'user')
   wallets: Relation<Wallet[]>;
 
   @OneToMany('Social', 'user', {
-      cascade: true
+      cascade: true,
   })
   socials: Relation<Social[]>;
 
