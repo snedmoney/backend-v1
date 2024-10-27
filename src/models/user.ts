@@ -11,7 +11,7 @@ import type { Link } from './link';
 import { PaymentMethod } from './paymentMethod';
 import type { Relation } from 'typeorm';
 import { Social } from './social';
-import type { Wallet } from './wallet';
+import { Wallet } from './wallet';
 
 @Entity('user')
 export class User {
@@ -30,15 +30,13 @@ export class User {
   @Column({ type: 'varchar', length: 255, nullable: true })
   profileURI: string;
 
-  @OneToMany('Wallet', 'user')
+  @OneToMany(() => Wallet, (wallet) => wallet.user)
   wallets: Relation<Wallet[]>;
 
-  @OneToMany('Social', 'user', {
-      cascade: true,
-  })
+  @OneToMany(() => Social, (social) => social.user, { cascade: true })
   socials: Relation<Social[]>;
 
-  @OneToMany('PaymentMethod', 'user', {
+  @OneToMany(() => PaymentMethod, (paymentMethod) => paymentMethod.user, {
       cascade: true,
   })
   paymentMethods: Relation<PaymentMethod[]>;
