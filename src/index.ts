@@ -3,12 +3,14 @@ import 'reflect-metadata';
 import express, { Express } from 'express';
 
 import { AppDataSource } from './data-source';
-import { AuthRoutes } from '@/routers/authorize';
+import { AuthRoutes } from '@/routers';
 import { ChainRoutes } from './routers/chains';
 // import authRouter from '@/routers/authorize';
 import { LinkRoutes } from '@/routers/link';
-import { TransactionRoutes } from '@/routers/transaction';
+import { PriceRoutes } from './routers/price';
 import { TokenRoutes } from '@/routers/tokens';
+import { TransactionRoutes } from '@/routers/transaction';
+import { UserRoutes } from './routers';
 // import settingRouter from '@/routers/setting';
 import { WalletRoutes } from '@/routers/wallet';
 import bodyParser from 'body-parser';
@@ -22,7 +24,6 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 // import chainsRouter from '@/routers/chains';
 import { verifyToken } from '@/util/jwt';
-import { PriceRoutes } from './routers/price';
 
 const app: Express = express();
 
@@ -49,6 +50,7 @@ async function main() {
     const walletRoutes = new WalletRoutes(dataSource);
     const authRouter = new AuthRoutes(dataSource);
     const priceRoutes = new PriceRoutes();
+    const userRoutes = new UserRoutes(dataSource);
     const linkRoutes = new LinkRoutes(dataSource);
     const transactionsRoutes = new TransactionRoutes(dataSource);
 
@@ -56,6 +58,7 @@ async function main() {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
     app.use(cors());
+    app.options('*', cors());
     // parse various different custom JSON types as JSON
     app.use(bodyParser.json());
 
@@ -64,20 +67,18 @@ async function main() {
 
     // Middlewares
     app.use(helmet());
-    app.use(rateLimiter);
-    app.use('/api/authorize', authRouter.router);
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
+    
+    // app.use(rateLimiter);
+    app.use('/api/authorize', authRouter.router);
+    app.use('/api/users', userRoutes.router);
     app.use('/api/price', priceRoutes.router);
     app.use('/api/links', linkRoutes.router);
     app.use('/api/transactions', transactionsRoutes.router);
     app.use(verifyToken);
     app.use('/api/wallets', walletRoutes.router);
-    // app.use('/api/link', linkRoutes.router);
-    // app.use('/api/transactions', transactionsRoutes.router);
-    // app.use('/api/setting', settingRouter);
-
     // Error handlers
     app.use(errorHandler());
 

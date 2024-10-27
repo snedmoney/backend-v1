@@ -9,19 +9,20 @@ import {
 } from 'typeorm';
 
 import type { Relation } from 'typeorm';
-import type { User } from './user';
+import { User } from './user';
 
 @Entity()
-export class Wallet {
+export class Social {
   @PrimaryGeneratedColumn('increment')
   id: bigint;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  address: string;
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  name: string;
 
-  @ManyToOne('User', 'user', {
-      cascade: true,
-  })
+  @Column({ type: 'varchar', length: 255, nullable: false })
+  url: string;
+
+  @ManyToOne('User', 'socials')
   @JoinColumn({ name: 'userId' })
   user: Relation<User>;
 

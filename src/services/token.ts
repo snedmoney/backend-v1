@@ -1,5 +1,6 @@
-import { Token } from '@/models/token';
 import { DataSource, Repository } from 'typeorm';
+
+import { Token } from '@/models/token';
 
 type GetTokensOptions = {
     perPage: number;
@@ -75,5 +76,13 @@ export class TokenService {
         tokens = queriedTokens;
 
         return tokens;
+    }
+    getTokenByAddress = async (address: string) => {
+        const token = await this.repo.findOne({
+            where: {
+                address,
+            }
+        })
+        return token;
     }
 }

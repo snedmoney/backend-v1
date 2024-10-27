@@ -1,5 +1,4 @@
 import {
-  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -8,20 +7,29 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { Chain } from './chain';
 import type { Relation } from 'typeorm';
-import type { User } from './user';
+import { Token } from './token';
+import { User } from './user';
 
+/**
+* @name - PaymentMethod
+* @description - This entity represents a user's preferred payment methods.
+*/
 @Entity()
-export class Wallet {
+export class PaymentMethod {
   @PrimaryGeneratedColumn('increment')
   id: bigint;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  address: string;
+  @ManyToOne('Chain', 'chain')
+  @JoinColumn({ name: 'chainId' })
+  chain: Relation<Chain>;
 
-  @ManyToOne('User', 'user', {
-      cascade: true,
-  })
+  @ManyToOne('Token', 'token')
+  @JoinColumn({ name: 'tokenId' })
+  token: Relation<Token>;
+
+  @ManyToOne('User', 'paymentMethods')
   @JoinColumn({ name: 'userId' })
   user: Relation<User>;
 

@@ -11,11 +11,6 @@ type GetWalletsOptions = {
     page: number;
 };
 
-type UpdateWalletOptions = {
-    id: bigint;
-    updates: Wallet;
-};
-
 export class WalletService {
     private repository: Repository<Wallet>;
     constructor(dataSource: DataSource){
@@ -31,10 +26,13 @@ export class WalletService {
         return wallet;
     }
 
-    getWalletByAddress = async (address: string) => {
+    getWalletByAddress = async (address: string, relations?: ["User"]) => {
         const wallet = await this.repository.findOne({
             where: {
                 address,
+            },
+            relations: {
+                user: relations?.includes('User'),
             }
         });
         return wallet;
