@@ -38,10 +38,13 @@ export class WalletService {
         return wallet;
     }
 
-    getWallets = async (options: GetWalletsOptions) => {
+    getWallets = async (options: GetWalletsOptions, relations?: ('User')[]) => {
         const [wallets] = await this.repository.findAndCount({
             take: options.perPage,
             skip: (options.page - 1) * options.perPage,
+            relations: {
+                user: relations?.includes('User')
+            }
         });
         return wallets;
     }
