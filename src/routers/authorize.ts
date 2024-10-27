@@ -82,7 +82,7 @@ export class AuthRoutes {
             if (!wallet) {
                 await this.walletService.createWallet({
                     address,
-                    user: new User(), // TODO: Verify how the user entity fits in.
+                    user: new User(),
                 });
             }
             const token = createToken({ address });
