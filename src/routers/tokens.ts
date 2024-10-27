@@ -16,7 +16,7 @@ export class TokenRoutes {
     registerRoutes() {
         this.router.get('/chains/:id', this.getTokensByChain);
         this.router.get('/:id', this.getToken);
-        this.router.get('/search', this.searchTokens);
+        this.router.get('/chains/:id/search', this.searchTokens);
         this.router.get('/', this.getTokens);
     }
     /**
@@ -75,7 +75,7 @@ export class TokenRoutes {
 
     /**
      * @swagger
-     * /api/tokens/search:
+     * /api/tokens/chains/{id}/search:
      *   get:
      *     summary: Get a list of tokens from a search query.
      *     description: Get a list of tokens a search query.
@@ -103,6 +103,15 @@ export class TokenRoutes {
             });
         }
 
+        let chainId;
+        try {
+            chainId = parseInt(req.params.id);
+        } catch (err) {
+            return res.status(400).json({
+                error: 'Invalid chain ID',
+            });
+        }
+
         let query: string;
         try {
             query = queryParam.toString();
@@ -112,7 +121,7 @@ export class TokenRoutes {
             });
         }
 
-        const tokens = await this.tokenService.searchTokens(query);
+        const tokens = await this.tokenService.searchTokens(chainId, query);
 
         res.status(200).json({
             tokens,

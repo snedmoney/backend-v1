@@ -6,7 +6,7 @@ import { LinkService } from '@/services/link';
 import { LinkType } from '@/models/link';
 
 const linkSchema = z.object({
-    type: z.enum(['tip', 'donation', 'payment'], {
+    type: z.enum(['profile', 'donation', 'payment'], {
         required_error: 'type is required',
     }) as z.ZodType<LinkType>,
     userId: z.bigint().optional(),
