@@ -28,3 +28,22 @@ const evmToWormholeChainId: Record<number, number> = {
 export function getWormholeChainId(evmChainId: number): number | undefined {
     return evmToWormholeChainId[evmChainId];
 }
+
+const wormholeToEvmChainId: Record<number, number> = Object.entries(
+    evmToWormholeChainId
+).reduce(
+    (acc, [evmChainId, wormholeChainId]) => {
+        acc[wormholeChainId] = Number(evmChainId);
+        return acc;
+    },
+    {} as Record<number, number>
+);
+
+/**
+ * Function to get EVM Chain ID from Wormhole Chain ID
+ * @param wormholeChainId - The Wormhole chain ID to map
+ * @returns The corresponding EVM chain ID or undefined if not found
+ */
+export function getEvmChainId(wormholeChainId: number): number | undefined {
+    return wormholeToEvmChainId[wormholeChainId];
+}

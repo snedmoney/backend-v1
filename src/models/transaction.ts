@@ -30,7 +30,7 @@ export enum TransactionStatus {
 @Entity()
 export class Transaction {
   @PrimaryColumn()
-  id: string; // should be UUID
+  id: string;
 
   @Column({
       type: 'enum',

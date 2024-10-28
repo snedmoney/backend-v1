@@ -1,37 +1,20 @@
-import axios from 'axios';
-import { Address } from 'viem';
-import abi from '@/configs/abi';
+import { Address, isAddressEqual } from 'viem';
 import { getWalletClient } from '@/util/wallet-client';
 import {
     getPancakeswapRouter,
     getPaymentContract,
+    getTokenBridge,
     getUSDT,
     getWxUSDT,
 } from '@/util/contract-address';
-import { getWormholeChainId } from '@/util/wormhole';
+import { getEvmChainId, getWormholeChainId } from '@/util/wormhole';
 import getPublicClient from '@/util/client';
+import { getContractLogs } from '@/util/log';
+import { fetchVaaWithRetry } from '@/util/vaa';
+import abi from '@/util/abi';
 
 class PaymentService {
     constructor() {}
-
-    private async getVaaFromWormholeScan(
-        chainId: number,
-        emitter: string,
-        sequence: number
-    ): Promise<{ vaa: string; amount: string }> {
-        const url = `https://api.wormholescan.io/api/v1/vaas/${chainId}/${emitter}/${sequence}?parsedPayload=true`;
-        try {
-            const response = await axios.get(url);
-
-            return {
-                vaa: response.data.data.vaa,
-                amount: response.data.data.payload.amount,
-            };
-        } catch (error) {
-            console.error('Error fetching VAA:', error);
-            throw error;
-        }
-    }
 
     private generateEncodedVm(vaa: string): string {
         return `0x${Buffer.from(vaa, 'base64').toString('hex')}`;
@@ -61,27 +44,59 @@ class PaymentService {
         return swapParams;
     }
 
+    public async getTxEvents(srcChainId: number, txHash: `0x${string}`) {
+        const publicClient = getPublicClient(srcChainId);
+
+        const paymentContract = getPaymentContract(srcChainId);
+
+        const receipt = await publicClient.getTransactionReceipt({
+            hash: txHash,
+        });
+
+        if (!isAddressEqual(receipt.to, paymentContract)) {
+            return;
+        }
+
+        return getContractLogs(receipt.logs);
+    }
+
+    public async processPayment(srcChainId: number, txHash: `0x${string}`) {
+        const txEvents = await this.getTxEvents(srcChainId, txHash);
+
+        const bridgeInitiatedEvent = txEvents.find(
+            (e) => e.eventName === 'BridgePaymentInitiated'
+        );
+
+        if (bridgeInitiatedEvent) {
+            await this.completePayment(
+                srcChainId,
+                bridgeInitiatedEvent.args.sequence,
+                bridgeInitiatedEvent.args.destWormChainId
+            );
+        }
+    }
+
     public async completePayment(
         srcChainId: number,
-        emitter: string,
-        sequence: number,
-        destChainId: number,
-        fee: bigint = 0n
+        sequence: bigint,
+        destWormChainId: number
     ) {
         try {
             const wormholeSrcChainId = getWormholeChainId(srcChainId);
 
-            const { vaa, amount } = await this.getVaaFromWormholeScan(
+            const emitter = getTokenBridge(srcChainId);
+
+            const { vaa, amount } = await fetchVaaWithRetry(
                 wormholeSrcChainId,
                 emitter,
-                sequence
+                Number(sequence)
             );
+
+            const destChainId = getEvmChainId(destWormChainId);
 
             const encodedVm = this.generateEncodedVm(vaa);
 
             const walletClient = getWalletClient(destChainId);
-
-            const publicClient = getPublicClient(destChainId);
 
             const paymentContract = getPaymentContract(destChainId);
 
@@ -89,6 +104,8 @@ class PaymentService {
                 destChainId,
                 BigInt(amount)
             );
+
+            const fee = 0n;
 
             const hash = await walletClient.writeContract({
                 address: paymentContract,
@@ -104,18 +121,8 @@ class PaymentService {
             return hash;
         } catch (error) {
             console.error('Error in completePayment:', error);
-            throw error;
         }
     }
 }
 
-// TODO: remove this later once the integration is done
-function test() {
-    const ins = new PaymentService();
-    ins.completePayment(
-        42161,
-        '0x0b2402144bb366a632d14b83f244d2e0e21bd39c',
-        287061,
-        8453
-    );
-}
+export default PaymentService;

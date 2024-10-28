@@ -13,9 +13,13 @@ const transactionSchema = z.object({
     id: z.string({
         required_error: 'id is required',
     }), // as a uuid as unique for primary key, passed from FE
-    linkId: z.string({
-        required_error: 'linkId is required',
-    }), // must provide from FE
+    sourceChainId: z.number(),
+    sourceTransactionHash: z.string(),
+    linkId: z
+        .string({
+            required_error: 'linkId is required',
+        })
+        .optional(), // must provide from FE
     userId: z.bigint().optional(), // / must provide  from FE
     name: z.string().optional(),
     message: z.string().optional(), // / must provide  from FE
@@ -106,13 +110,7 @@ export class TransactionRoutes {
 
         try {
             const createdTransaction =
-                await this.transactionService.createTransaction({
-                    linkId: body.linkId,
-                    id: body.id,
-                    message: body.message,
-                    userId: body.userId,
-                    type: body.type,
-                });
+                await this.transactionService.createTransaction(req.body);
             return res.status(201).json({
                 transaction: createdTransaction,
             });
