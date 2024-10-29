@@ -97,6 +97,7 @@ export class LinkService {
         const link = this.repo.create({
             user,
             description: args.description,
+            title: args.title,
             type: args.type,
             acceptUntil: args.acceptUntil,
             goalAmount: args.goalAmount,

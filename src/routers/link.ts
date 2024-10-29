@@ -260,7 +260,6 @@ export class LinkRoutes {
         const body = req.body as z.infer<typeof linkSchema>;
         try {
             const createdLink = await this.linkService.createLink({
-                userId: body.userId,
                 description: body.description,
                 type: body.type,
                 title: body.title,
@@ -273,7 +272,7 @@ export class LinkRoutes {
             return res.status(201).json(createdLink);
         } catch (err) {
             return res.status(400).json({
-                error: `Unable to create a transaction: ${err?.message || err}`,
+                error: `Unable to create link: ${err?.message || err}`,
             });
         }
     };
