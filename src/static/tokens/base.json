@@ -7,6 +7,15 @@
         "logoURI": "https://assets.coingecko.com/coins/images/6319/small/usdc.png?1696506694",
         "chainId": 8453
     },
+    "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2": {
+        "chainId": 8453,
+        "symbol": "USDT",
+        "name": "Tether USD",
+        "address": "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
+        "decimals": 18,
+        "logoURI": "https://tokens.1inch.io/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+        "tags": ["crosschain", "GROUP:USDT", "PEG:USD", "tokens"]
+    },
     "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452": {
         "name": "Wrapped liquid staked Ether 2.0",
         "symbol": "wstETH",

@@ -1,8 +1,9 @@
 import { DataSource, Like, Repository } from 'typeorm';
 import { Link, LinkType } from '@/models/link';
+import { User, Wallet } from '@/models';
+
 import { Chain } from '@/models/chain';
 import { Token } from '@/models/token';
-import { User } from '@/models/user';
 
 type GetLinksOption = {
     perPage: number;
@@ -12,6 +13,7 @@ type GetLinksOption = {
 
 type CreateLinkArgs = {
     type: LinkType;
+    title?: string;
     userId?: bigint;
     description: string;
     acceptUntil: Date;
@@ -19,18 +21,22 @@ type CreateLinkArgs = {
     destinationTokenAddress?: string;
     destinationChainId?: number;
     destinationWalletId?: number;
+    destinationWalletAddress?: string;
+    user: User;
 };
 
 export class LinkService {
     private repo: Repository<Link>;
     private chainRepo: Repository<Chain>;
     private tokenRepo: Repository<Token>;
+    private walletRepo: Repository<Wallet>;
     private userRepo: Repository<User>;
 
     constructor(dataSource: DataSource) {
         this.repo = dataSource.getRepository(Link);
         this.chainRepo = dataSource.getRepository(Chain);
         this.tokenRepo = dataSource.getRepository(Token);
+        this.walletRepo = dataSource.getRepository(Wallet);
     }
 
     async getLinks(options: GetLinksOption): Promise<Link[] | null> {
@@ -57,7 +63,12 @@ export class LinkService {
             where: {
                 id,
             },
-            relations: ['destinationToken', 'destinationChain'],
+            relations: {
+                destinationToken: true,
+                destinationChain: true,
+                destinationWallet: true,
+                user: true,
+            },
         });
 
         return link;
@@ -69,7 +80,7 @@ export class LinkService {
                 id: args.destinationChainId,
             },
         });
-        console.log(chain);
+
         if (!chain) return null;
 
         const destinationToken = await this.tokenRepo.findOne({
@@ -77,25 +88,24 @@ export class LinkService {
                 address: args.destinationTokenAddress,
             },
         });
-        if (!destinationToken) return null;
 
-        let user;
-        if (args.userId) {
-            user = await this.userRepo.findOne({
-                where: {
-                    id: args.userId,
-                },
-            });
-        }
+        if (!destinationToken) return null;
+        const destinationWallet = await this.walletRepo.findOne({
+            where: {
+                address: args.destinationWalletAddress,
+            },
+        });
 
         const link = this.repo.create({
-            user,
+            user: args.user,
             description: args.description,
+            title: args.title,
             type: args.type,
             acceptUntil: args.acceptUntil,
             goalAmount: args.goalAmount,
             destinationChain: chain,
             destinationToken,
+            destinationWallet,
         });
 
         await this.repo.insert(link);

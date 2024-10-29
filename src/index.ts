@@ -36,7 +36,7 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'https://backend-staging-hc8j.onrender.com',
+                url: process.env.SWAGGER_URL || 'https://api.sned.money',
             },
         ],
     },
@@ -70,14 +70,14 @@ async function main() {
 
     app.use('/api/tokens', tokenRoutes.router);
     app.use('/api/chains', chainRoutes.router);
-    
+
     // app.use(rateLimiter);
     app.use('/api/authorize', authRouter.router);
     app.use('/api/users', userRoutes.router);
     app.use('/api/price', priceRoutes.router);
     app.use('/api/links', linkRoutes.router);
-    app.use('/api/transactions', transactionsRoutes.router);
     app.use(verifyToken);
+    app.use('/api/transactions', transactionsRoutes.router);
     app.use('/api/wallets', walletRoutes.router);
     // Error handlers
     app.use(errorHandler());

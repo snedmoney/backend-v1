@@ -1,17 +1,16 @@
 import {
-  Entity,
   Column,
-  OneToMany,
-  ManyToOne,
   CreateDateColumn,
-  JoinColumn,
+  Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { Chain } from './chain';
 import type { Relation } from 'typeorm';
 import type { Token } from './token';
-import { Chain } from './chain';
-import { Wallet } from './wallet';
 import { User } from './user';
+import { Wallet } from './wallet';
 
 export enum LinkType {
   DONATION = 'donation',
@@ -23,6 +22,9 @@ export enum LinkType {
 export class Link {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ nullable: true })
+  title: string;
 
   @Column({
       type: 'enum',
@@ -53,7 +55,7 @@ export class Link {
   @ManyToOne('Chain', 'links', { cascade: true })
   destinationChain: Relation<Chain>;
 
-  @OneToMany('Wallet', 'id', { cascade: true })
+  @ManyToOne('Wallet', 'links', { cascade: true })
   destinationWallet: Relation<Wallet>;
 
   @ManyToOne('User', 'links', { cascade: true })

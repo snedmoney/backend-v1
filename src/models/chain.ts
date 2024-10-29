@@ -1,7 +1,9 @@
-import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+
+import type { Link } from './link';
+import { PaymentMethod } from './paymentMethod';
 import type { Relation } from 'typeorm';
 import type { Token } from './token';
-import type { Link } from './link';
 
 @Entity()
 export class Chain {
@@ -33,4 +35,7 @@ export class Chain {
 
     @OneToMany('Link', 'destinationChain')
     links: Relation<Link[]>;
+
+    @OneToMany('PaymentMethod', 'chain')
+    paymentMethods: Relation<PaymentMethod[]>;
 }

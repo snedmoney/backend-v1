@@ -10,7 +10,7 @@ import {
 import { Chain } from './chain';
 import type { Relation } from 'typeorm';
 import { Token } from './token';
-import { User } from './user';
+import type { User } from './user';
 
 /**
 * @name - PaymentMethod
@@ -21,15 +21,13 @@ export class PaymentMethod {
   @PrimaryGeneratedColumn('increment')
   id: bigint;
 
-  @ManyToOne('Chain', 'chain')
-  @JoinColumn({ name: 'chainId' })
+  @ManyToOne('Chain', 'paymentMethods', { cascade: true })
   chain: Relation<Chain>;
 
-  @ManyToOne('Token', 'token')
-  @JoinColumn({ name: 'tokenId' })
+  @ManyToOne('Token', 'paymentMethods')
   token: Relation<Token>;
 
-  @ManyToOne(() => User, (user) => user.paymentMethods)
+  @ManyToOne('User', 'paymentMethods')
   user: Relation<User>;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
