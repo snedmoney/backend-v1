@@ -40,7 +40,7 @@ const chainToPopularityUrl = {
     1: 'https://www.coingecko.com/en/categories/ethereum-ecosystem',
     42161: 'https://www.coingecko.com/en/chains/arbitrum-one',
     8453: 'https://www.coingecko.com/en/categories/base-ecosystem',
-    65: 'https://www.coingecko.com/en/categories/binance-smart-chain',
+    56: 'https://www.coingecko.com/en/categories/binance-smart-chain',
     43114: 'https://www.coingecko.com/en/chains/avalanche-network',
     137: 'https://www.coingecko.com/en/categories/polygon-ecosystem',
     10: 'https://www.coingecko.com/en/categories/optimism-ecosystem',

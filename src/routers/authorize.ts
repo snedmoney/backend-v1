@@ -74,8 +74,10 @@ export class AuthRoutes {
             });
         }
         try {
+            const authMessage = `Welcome to Sned! By signing this message, you authorize Sned to view your wallet address, request transaction approvals, and display your account balance. We cannot initiate transactions, access your private keys, or transfer funds without your explicit consent. You can disconnect your wallet at any time. Sign to verify ownership and proceed.`;
+
             const address = await recoverMessageAddress({
-                message: 'hello world',
+                message: authMessage,
                 signature: signature,
             });
             const wallet = await this.walletService.getWalletByAddress(address);
@@ -86,7 +88,7 @@ export class AuthRoutes {
                 });
             }
             const token = createToken({ address });
-            res.json({ token });
+            res.json({ token, user: wallet.user });
         } catch (e) {
             res.status(400).json({ error: 'Bad Request' });
         }

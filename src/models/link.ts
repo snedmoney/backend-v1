@@ -1,9 +1,10 @@
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Chain } from './chain';
@@ -13,51 +14,49 @@ import { User } from './user';
 import { Wallet } from './wallet';
 
 export enum LinkType {
-  DONATION = 'donation',
-  PROFILE = 'profile',
-  PAYMENT = 'payment',
+    DONATION = 'donation',
+    PROFILE = 'profile',
+    PAYMENT = 'payment',
 }
 
 @Entity()
 export class Link {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+    @Column({ nullable: true })
+    title: string;
 
-  @Column({ nullable: true })
-  title: string;
+    @Column({
+        type: 'enum',
+        enum: LinkType,
+    })
+    type: LinkType;
 
-  @Column({
-      type: 'enum',
-      enum: LinkType,
-  })
-  type: LinkType;
+    @Column()
+    description: string;
 
-  @Column()
-  description: string;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
+    // Payment and Tip type does not need acceptUntil
+    @CreateDateColumn({ type: 'timestamp', nullable: true })
+    acceptUntil: Date;
 
-  // Payment and Tip type does not need acceptUntil
-  @CreateDateColumn({ type: 'timestamp', nullable: true })
-  acceptUntil: Date;
+    // Payemnt and Tip type does not need goalAmount
+    @Column({ type: 'float', nullable: true })
+    goalAmount: number;
 
-  // Payemnt and Tip type does not need goalAmount
-  @Column({ type: 'float', nullable: true })
-  goalAmount: number;
+    @ManyToOne('Token', 'links', { cascade: true })
+    destinationToken: Relation<Token>;
+    @ManyToOne('Chain', 'links', { cascade: true })
+    destinationChain: Relation<Chain>;
 
-  @ManyToOne('Token', 'links', { cascade: true })
-  destinationToken: Relation<Token>;
+    @OneToMany('Wallet', 'id', { cascade: true })
+    destinationWallet: Relation<Wallet>;
 
-  @ManyToOne('Chain', 'links', { cascade: true })
-  destinationChain: Relation<Chain>;
-
-  @ManyToOne('Wallet', 'links', { cascade: true })
-  destinationWallet: Relation<Wallet>;
-
-  @ManyToOne('User', 'links', { cascade: true })
-  user: Relation<User>;
+    @ManyToOne('User', 'links', { cascade: true })
+    user: Relation<User>;
 }
