@@ -1,61 +1,65 @@
 import {
-  Entity,
-  Column,
-  OneToMany,
-  ManyToOne,
-  CreateDateColumn,
-  JoinColumn,
-  PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { Chain } from './chain';
 import type { Relation } from 'typeorm';
 import type { Token } from './token';
-import { Chain } from './chain';
-import { Wallet } from './wallet';
 import { User } from './user';
+import { Wallet } from './wallet';
 
 export enum LinkType {
-  DONATION = 'donation',
-  PROFILE = 'profile',
-  PAYMENT = 'payment',
+    DONATION = 'donation',
+    PROFILE = 'profile',
+    PAYMENT = 'payment',
 }
 
 @Entity()
 export class Link {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
-  @Column({
-      type: 'enum',
-      enum: LinkType,
-  })
-  type: LinkType;
+    @Column({ nullable: true })
+    title: string;
 
-  @Column()
-  description: string;
+    @Column({
+        type: 'enum',
+        enum: LinkType,
+    })
+    type: LinkType;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+    @Column()
+    description: string;
 
-  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt: Date;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
-  // Payment and Tip type does not need acceptUntil
-  @CreateDateColumn({ type: 'timestamp', nullable: true })
-  acceptUntil: Date;
+    @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    updatedAt: Date;
 
-  // Payemnt and Tip type does not need goalAmount
-  @Column({ type: 'float', nullable: true })
-  goalAmount: number;
+    // Payment and Tip type does not need acceptUntil
+    @CreateDateColumn({ type: 'timestamp', nullable: true })
+    acceptUntil: Date;
 
-  @ManyToOne('Token', 'links', { cascade: true })
-  destinationToken: Relation<Token>;
+    // Payemnt and Tip type does not need goalAmount
+    @Column({ type: 'float', nullable: true })
+    goalAmount: number;
 
-  @ManyToOne('Chain', 'links', { cascade: true })
-  destinationChain: Relation<Chain>;
+    @ManyToOne('Token', 'links', { cascade: true })
+    destinationToken: Relation<Token>;
 
-  @OneToMany('Wallet', 'id', { cascade: true })
-  destinationWallet: Relation<Wallet>;
+    @ManyToOne('Chain', 'links', { cascade: true })
+    destinationChain: Relation<Chain>;
 
-  @ManyToOne('User', 'links', { cascade: true })
-  user: Relation<User>;
+    @OneToMany('Wallet', 'id', { cascade: true })
+    destinationWallet: Relation<Wallet>;
+
+    @ManyToOne('User', 'links', { cascade: true })
+    user: Relation<User>;
 }
