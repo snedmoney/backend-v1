@@ -22,7 +22,16 @@ export const AppDataSource = new DataSource({
     database: 'postgres',
     synchronize: true,
     logging: true,
-    entities: [Token, Chain, Wallet, User, Transaction, Link, PaymentMethod, Social],
+    entities: [
+        Token,
+        Chain,
+        Wallet,
+        User,
+        Transaction,
+        Link,
+        PaymentMethod,
+        Social,
+    ],
     subscribers: [],
     migrations: [],
 });

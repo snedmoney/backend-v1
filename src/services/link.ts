@@ -1,9 +1,9 @@
 import { DataSource, Like, Repository } from 'typeorm';
 import { Link, LinkType } from '@/models/link';
+import { User, Wallet } from '@/models';
 
 import { Chain } from '@/models/chain';
 import { Token } from '@/models/token';
-import { Wallet } from '@/models';
 
 type GetLinksOption = {
     perPage: number;
@@ -22,6 +22,7 @@ type CreateLinkArgs = {
     destinationChainId?: number;
     destinationWalletId?: number;
     destinationWalletAddress?: string;
+    user: User;
 };
 
 export class LinkService {
@@ -29,6 +30,7 @@ export class LinkService {
     private chainRepo: Repository<Chain>;
     private tokenRepo: Repository<Token>;
     private walletRepo: Repository<Wallet>;
+    private userRepo: Repository<User>;
 
     constructor(dataSource: DataSource) {
         this.repo = dataSource.getRepository(Link);
@@ -61,7 +63,12 @@ export class LinkService {
             where: {
                 id,
             },
-            relations: ['destinationToken', 'destinationChain'],
+            relations: {
+                destinationToken: true,
+                destinationChain: true,
+                destinationWallet: true,
+                user: true,
+            },
         });
 
         return link;
@@ -87,15 +94,10 @@ export class LinkService {
             where: {
                 address: args.destinationWalletAddress,
             },
-            relations: {
-                user: true,
-            },
         });
 
-        const user = destinationWallet.user;
-
         const link = this.repo.create({
-            user,
+            user: args.user,
             description: args.description,
             title: args.title,
             type: args.type,

@@ -1,13 +1,16 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import type { Relation } from 'typeorm';
+
 import type { Chain } from './chain';
 import type { Link } from './link';
+import { PaymentMethod } from './paymentMethod';
+import type { Relation } from 'typeorm';
 
 @Entity()
 export class Token {
@@ -41,4 +44,7 @@ export class Token {
 
   @Column()
   chainId: number;
+
+  @OneToMany('PaymentMethod', 'token')
+  paymentMethods: Relation<PaymentMethod[]>;
 }

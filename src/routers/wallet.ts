@@ -19,7 +19,7 @@ export class WalletRoutes {
         this.router.get('/', this.getWallets);
     }
 
-        /**
+    /**
      * @swagger
      * components:
      *   securitySchemes:
@@ -214,7 +214,9 @@ export class WalletRoutes {
             });
         }
 
-        const wallet = await this.walletService.getWalletByAddress(address);
+        const wallet = await this.walletService.getWalletByAddress(address, [
+            'User',
+        ]);
 
         if (!wallet) {
             return res.status(404).json({

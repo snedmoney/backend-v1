@@ -3,6 +3,8 @@ import { Request, Response, Router } from 'express';
 import { DataSource } from 'typeorm';
 import { LinkService } from '@/services/link';
 import { LinkType } from '@/models/link';
+import { User } from '@/models';
+import { UserService } from '@/services';
 import z from 'zod';
 
 const linkSchema = z.object({
@@ -12,7 +14,6 @@ const linkSchema = z.object({
     type: z.enum(['profile', 'donation', 'payment'], {
         required_error: 'type is required',
     }) as z.ZodType<LinkType>,
-    userId: z.bigint().optional(),
     description: z.string({
         required_error: 'description is required',
     }),
@@ -26,11 +27,13 @@ const linkSchema = z.object({
 
 export class LinkRoutes {
     linkService: LinkService;
+    userService: UserService;
     router: Router;
 
     constructor(dataSource: DataSource) {
         this.router = Router();
         this.linkService = new LinkService(dataSource);
+        this.userService = new UserService(dataSource);
         this.registerRoutes();
     }
 
@@ -182,6 +185,16 @@ export class LinkRoutes {
      *         description: Internal server error
      */
     getLink = async (req: Request, res: Response) => {
+        const linkIdSchema = z.string().uuid();
+
+        try {
+            linkIdSchema.parse(req.params['id']);
+        } catch (err) {
+            return res.status(400).json({
+                error: 'link ID must be a UUID',
+            });
+        }
+
         const link = await this.linkService.getLink(req.params['id']);
 
         if (!link)
@@ -258,8 +271,22 @@ export class LinkRoutes {
         }
 
         const body = req.body as z.infer<typeof linkSchema>;
+
+        let user: User;
+        if (body.destinationWalletAddress) {
+            user = await this.userService.getUserByWalletAddress(
+                body.destinationWalletAddress
+            );
+            if (!user) {
+                return res.status(404).json({
+                    error: `User with wallet address ${body.destinationWalletAddress} not found`,
+                });
+            }
+        }
+
         try {
             const createdLink = await this.linkService.createLink({
+                user,
                 description: body.description,
                 type: body.type,
                 title: body.title,

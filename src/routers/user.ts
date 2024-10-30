@@ -27,8 +27,12 @@ export class UserRoutes {
     }
 
     registerRoutes() {
+        this.router.get('/username/:username', this.getUserByUserName);
+        this.router.get(
+            '/wallet/address/:address',
+            this.getUserByWalletAddress
+        );
         this.router.get('/:id', this.getUserProfile);
-        this.router.get('username/:username', this.getUserByUserName);
         this.router.post('/', this.createUserProfile);
     }
 
@@ -38,8 +42,6 @@ export class UserRoutes {
      *   get:
      *     summary: Get User by Username
      *     description: Retrieve user details by their username.
-     *     security:
-     *       - BearerAuth: []
      *     parameters:
      *       - name: username
      *         in: path
@@ -115,6 +117,48 @@ export class UserRoutes {
 
     /**
      * @swagger
+     * /api/users/wallet/address/{address}:
+     *   get:
+     *     summary: Get user by wallet address
+     *     tags: [Users]
+     *     parameters:
+     *       - name: address
+     *         in: path
+     *         required: true
+     *         type: string
+     *         description: Wallet address of the user
+     *     responses:
+     *       200:
+     *         description: User found
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/User'
+     *       400:
+     *         description: Address is required
+     *       404:
+     *         description: User not found
+     */
+    getUserByWalletAddress = async (req, res) => {
+        const { address = '' } = req.params;
+        if (!address) {
+            return res.status(400).json({
+                error: 'address is required',
+            });
+        }
+        const user = await this.userService.getUserByWalletAddress(address);
+        if (!user) {
+            return res.status(404).json({
+                error: 'User not found',
+            });
+        }
+        return res.status(200).json({
+            user,
+        });
+    };
+
+    /**
+     * @swagger
      * components:
      *   securitySchemes:
      *     BearerAuth:
@@ -129,8 +173,6 @@ export class UserRoutes {
      *   get:
      *     summary: Get User Profile
      *     description: Retrieve the user profile by user ID.
-     *     security:
-     *       - BearerAuth: []
      *     parameters:
      *       - name: id
      *         in: path
@@ -183,7 +225,8 @@ export class UserRoutes {
         }
 
         const user = await this.userService.getUserById(userId, [
-            'PaymentMethods', 'Socials'
+            'PaymentMethods',
+            'Socials',
         ]);
 
         if (!user) {

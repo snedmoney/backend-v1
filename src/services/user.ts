@@ -11,7 +11,7 @@ export class UserService {
 
     getUserById = async (
         id: bigint,
-        relations?: ('Wallets' |'PaymentMethods' | 'Socials')[]
+        relations?: ('Wallets' | 'PaymentMethods' | 'Socials')[]
     ) => {
         const user = await this.repository.findOne({
             where: {
@@ -20,7 +20,7 @@ export class UserService {
             relations: {
                 wallets: relations?.includes('Wallets'),
                 paymentMethods: relations?.includes('PaymentMethods'),
-                socials: relations?.includes('Socials')
+                socials: relations?.includes('Socials'),
             },
         });
         return user;
@@ -36,8 +36,7 @@ export class UserService {
         return user;
     };
 
-    getUserByWalletAddress = async (walletAddress: string,
-        relations?: ('Wallets' | 'PaymentMethods' | 'Socials')[]) => {
+    getUserByWalletAddress = async (walletAddress: string) => {
         const user = await this.repository.findOne({
             where: {
                 wallets: {
@@ -45,9 +44,9 @@ export class UserService {
                 },
             },
             relations: {
-                wallets: relations?.includes('Wallets'),
-                paymentMethods: relations?.includes('PaymentMethods'),
-                socials: relations?.includes('Socials')
+                wallets: true,
+                socials: true,
+                paymentMethods: true,
             },
         });
 

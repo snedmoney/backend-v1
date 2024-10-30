@@ -2,7 +2,6 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -24,7 +23,6 @@ export enum LinkType {
 export class Link {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-
     @Column({ nullable: true })
     title: string;
 
@@ -53,7 +51,6 @@ export class Link {
 
     @ManyToOne('Token', 'links', { cascade: true })
     destinationToken: Relation<Token>;
-
     @ManyToOne('Chain', 'links', { cascade: true })
     destinationChain: Relation<Chain>;
 
