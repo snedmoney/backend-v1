@@ -1,14 +1,15 @@
-import { Token } from '@/models/token';
-import { DataSource, Repository, Between } from 'typeorm';
+import { Between, DataSource, Repository } from 'typeorm';
 import {
     Transaction,
     TransactionStatus,
     TransactionType,
 } from '@/models/transaction';
-import { Link } from '@/models/link';
+
 import { Chain } from '@/models/chain';
-import { User } from '@/models';
+import { Link } from '@/models/link';
 import PaymentService from './payment';
+import { Token } from '@/models/token';
+import { User } from '@/models';
 
 type GetTransactionsOptions = {
     perPage: number;
@@ -40,6 +41,17 @@ export class TransactionService {
         this.userRepo = dataSource.getRepository(User);
         this.chainRepo = dataSource.getRepository(Chain);
         this.paymentService = new PaymentService();
+    }
+
+    async getTransactionsByLinkId(linkId: string) {
+        const transactions = await this.repo.find({
+            where: {
+                linkId: {
+                    id: linkId,
+                },
+            },
+        });
+        return transactions;
     }
 
     async getTransactions(

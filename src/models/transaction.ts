@@ -91,8 +91,7 @@ export class Transaction {
   @JoinColumn({ name: 'id' })
   walletId: Relation<Wallet>;
 
-  @OneToMany('Link', 'id')
-  @JoinColumn({ name: 'id' })
+  @ManyToOne('Link', 'transactions')
   linkId: Relation<Link>;
 
   @OneToMany('User', 'id')

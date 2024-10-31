@@ -31,6 +31,33 @@ export class UserService {
             where: {
                 userName,
             },
+            relations: {
+                wallets: true,
+                socials: true,
+                paymentMethods: {
+                    token: true,
+                    chain: true,
+                },
+            },
+        });
+
+        return user;
+    };
+
+    getUserByWalletAddressLinks = async (walletAddress: string) => {
+        const user = await this.repository.findOne({
+            where: {
+                wallets: {
+                    address: walletAddress,
+                },
+            },
+            relations: {
+                links: {
+                    destinationToken: true,
+                    destinationChain: true,
+                    destinationWallet: true,
+                },
+            },
         });
 
         return user;
@@ -46,7 +73,10 @@ export class UserService {
             relations: {
                 wallets: true,
                 socials: true,
-                paymentMethods: true,
+                paymentMethods: {
+                    token: true,
+                    chain: true,
+                },
             },
         });
 
