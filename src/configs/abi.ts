@@ -21,6 +21,16 @@ const abi = [
                 name: '_currentWormChainId',
                 type: 'uint16',
             },
+            {
+                internalType: 'address',
+                name: '_pythContract',
+                type: 'address',
+            },
+            {
+                internalType: 'bytes32',
+                name: '_priceId',
+                type: 'bytes32',
+            },
         ],
         stateMutability: 'nonpayable',
         type: 'constructor',
@@ -277,7 +287,7 @@ const abi = [
     },
     {
         inputs: [],
-        name: 'COMMISSION_RATE',
+        name: 'MAX_COMMISSION_RATE',
         outputs: [
             {
                 internalType: 'uint256',
@@ -326,6 +336,19 @@ const abi = [
         type: 'function',
     },
     {
+        inputs: [],
+        name: 'commissionRate',
+        outputs: [
+            {
+                internalType: 'uint256',
+                name: '',
+                type: 'uint256',
+            },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+    },
+    {
         inputs: [
             {
                 internalType: 'bytes',
@@ -368,11 +391,6 @@ const abi = [
                 internalType: 'struct PaymentStructs.SwapParams[]',
                 name: 'swapParamsArray',
                 type: 'tuple[]',
-            },
-            {
-                internalType: 'uint256',
-                name: 'fee',
-                type: 'uint256',
             },
         ],
         name: 'completePayment',
@@ -561,6 +579,19 @@ const abi = [
     {
         inputs: [
             {
+                internalType: 'uint256',
+                name: 'newRate',
+                type: 'uint256',
+            },
+        ],
+        name: 'setCommissionRate',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
                 internalType: 'address',
                 name: 'newOwner',
                 type: 'address',
@@ -574,6 +605,19 @@ const abi = [
     {
         inputs: [],
         name: 'unpause',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+    },
+    {
+        inputs: [
+            {
+                internalType: 'address',
+                name: 'newOwner',
+                type: 'address',
+            },
+        ],
+        name: 'updateOwner',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',

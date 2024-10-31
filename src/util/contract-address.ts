@@ -7,13 +7,16 @@ export const getPaymentContract = (
     if (!chainId) return;
 
     const contracts: { [key: number]: Address } = {
-        42161: '0x2d0c938784C940052651C23e56d0E24a22081E07', // Arbitrum
-        8453: '0x67831a575eedd49eeeeac6a1a2135533056a45d5', // Base
+        42161: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14', // Arbitrum
+        8453: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14', // Base
+        10: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14',
+        137: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14',
+        56: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14',
+        43114: '0xe58592b8fd375eb2f0a779877278cbc3224f5a14',
     };
 
     return contracts[chainId];
 };
-
 // Uniswap Quoter V2
 // Address reference: https://docs.uniswap.org/contracts/v3/reference/deployments/optimism-deployments
 export const getUniswapQuoter = (
