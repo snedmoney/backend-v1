@@ -18,7 +18,6 @@ import {
     bscTestnet,
 } from '@wagmi/core/chains';
 import { createConfig } from '@wagmi/core';
-import { metaMask } from '@wagmi/connectors';
 
 export const config = {
     chains: [
