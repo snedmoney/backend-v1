@@ -14,7 +14,7 @@ export class PriceRoutes {
     registerRoutes() {
         /**
          * @swagger
-         * /api/prices:
+         * /api/price:
          *   post:
          *     summary: Get prices for tokens in a chain
          *     description: Retrieve the current prices for an array of tokens within a specific blockchain.

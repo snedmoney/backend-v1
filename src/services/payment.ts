@@ -1,9 +1,11 @@
 import { Address, isAddressEqual } from 'viem';
+import abi from '@/configs/abi';
 import { getWalletClient } from '@/util/wallet-client';
 import {
     getPancakeswapRouter,
     getPaymentContract,
     getTokenBridge,
+    getUniswapRouter,
     getUSDT,
     getWxUSDT,
 } from '@/util/contract-address';
@@ -11,7 +13,6 @@ import { getEvmChainId, getWormholeChainId } from '@/util/wormhole';
 import getPublicClient from '@/util/client';
 import { getContractLogs } from '@/util/log';
 import { fetchVaaWithRetry } from '@/util/vaa';
-import abi from '@/util/abi';
 
 class PaymentService {
     constructor() {}
@@ -24,7 +25,11 @@ class PaymentService {
         const currentTimestamp = Math.floor(Date.now() / 1000);
         const deadline = currentTimestamp + 60 * 20;
 
-        const pancakeswapRouter = getPancakeswapRouter(chainId) as Address;
+        let router = getPancakeswapRouter(chainId) as Address | undefined;
+
+        if (!router) {
+            router = getUniswapRouter(chainId) as Address;
+        }
 
         const wxUsdt = getWxUSDT(chainId);
 
@@ -32,7 +37,7 @@ class PaymentService {
 
         const swapParams = [
             {
-                router: pancakeswapRouter,
+                router: router,
                 route: [wxUsdt, usdt],
                 fees: [100],
                 amountOutMinimum: (amountIn * 98n) / 100n,
@@ -105,13 +110,11 @@ class PaymentService {
                 BigInt(amount)
             );
 
-            const fee = 0n;
-
             const hash = await walletClient.writeContract({
                 address: paymentContract,
                 abi,
                 functionName: 'completePayment',
-                args: [encodedVm, swapParamsArray, fee],
+                args: [encodedVm, swapParamsArray],
                 chain: walletClient.chain,
                 account: walletClient.account,
             });
