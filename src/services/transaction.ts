@@ -43,13 +43,15 @@ export class TransactionService {
         this.paymentService = new PaymentService();
     }
 
-    async getTransactionByLinkId(linkId: string) {
-        const transaction = await this.linkRepo.findOne({
+    async getTransactionsByLinkId(linkId: string) {
+        const transactions = await this.repo.find({
             where: {
-                id: linkId,
+                linkId: {
+                    id: linkId,
+                },
             },
         });
-        return transaction;
+        return transactions;
     }
 
     async getTransactions(

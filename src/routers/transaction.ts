@@ -38,10 +38,7 @@ export class TransactionRoutes {
     registerRoutes() {
         this.router.get('/', this.getTransactions);
         this.router.get('/:id', this.getTransaction);
-        this.router.post(
-            '/transactions/link/:linkId',
-            this.getTransactionByLinkId
-        );
+        this.router.get('/link/:linkId', this.getTransactionByLinkId);
         this.router.post('/', this.createTransaction);
     }
 
@@ -73,7 +70,7 @@ export class TransactionRoutes {
     getTransactionByLinkId = async (req: Request, res: Response) => {
         const { linkId = '' } = req.params;
         const transaction =
-            await this.transactionService.getTransactionByLinkId(linkId);
+            await this.transactionService.getTransactionsByLinkId(linkId);
         if (!transaction) {
             return res.status(404).json({
                 error: `Transaction for linkId: ${linkId} not found!`,
