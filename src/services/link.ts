@@ -1,9 +1,9 @@
 import { DataSource, Like, Repository } from 'typeorm';
 import { Link, LinkType } from '@/models/link';
-import { User, Wallet } from '@/models';
 
 import { Chain } from '@/models/chain';
 import { Token } from '@/models/token';
+import { User, Wallet } from '@/models';
 
 type GetLinksOption = {
     perPage: number;
@@ -18,10 +18,10 @@ type CreateLinkArgs = {
     description: string;
     acceptUntil: Date;
     goalAmount?: number;
-    destinationTokenAddress?: string;
-    destinationChainId?: number;
+    destinationToken: Token;
+    destinationChain: Chain;
     destinationWalletId?: number;
-    destinationWalletAddress?: string;
+    destinationWallet: Wallet;
     user: User;
 };
 
@@ -75,27 +75,6 @@ export class LinkService {
     }
 
     async createLink(args: CreateLinkArgs): Promise<Link | null> {
-        const chain = await this.chainRepo.findOne({
-            where: {
-                id: args.destinationChainId,
-            },
-        });
-
-        if (!chain) return null;
-
-        const destinationToken = await this.tokenRepo.findOne({
-            where: {
-                address: args.destinationTokenAddress,
-            },
-        });
-
-        if (!destinationToken) return null;
-        const destinationWallet = await this.walletRepo.findOne({
-            where: {
-                address: args.destinationWalletAddress,
-            },
-        });
-
         const link = this.repo.create({
             user: args.user,
             description: args.description,
@@ -103,9 +82,9 @@ export class LinkService {
             type: args.type,
             acceptUntil: args.acceptUntil,
             goalAmount: args.goalAmount,
-            destinationChain: chain,
-            destinationToken,
-            destinationWallet,
+            destinationChain: args.destinationChain,
+            destinationToken: args.destinationToken,
+            destinationWallet: args.destinationWallet,
         });
 
         await this.repo.insert(link);

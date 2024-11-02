@@ -1,4 +1,4 @@
-import { Address, isAddressEqual } from 'viem';
+import { isAddressEqual } from 'viem';
 import abi from '@/configs/abi';
 import { getWalletClient } from '@/util/wallet-client';
 import {
@@ -8,6 +8,7 @@ import {
     getUniswapRouter,
     getUSDT,
     getWxUSDT,
+    RouterConfig,
 } from '@/util/contract-address';
 import { getEvmChainId, getWormholeChainId } from '@/util/wormhole';
 import getPublicClient from '@/util/client';
@@ -25,10 +26,10 @@ class PaymentService {
         const currentTimestamp = Math.floor(Date.now() / 1000);
         const deadline = currentTimestamp + 60 * 20;
 
-        let router = getPancakeswapRouter(chainId) as Address | undefined;
+        let router = getPancakeswapRouter(chainId) as RouterConfig | undefined;
 
         if (!router) {
-            router = getUniswapRouter(chainId) as Address;
+            router = getUniswapRouter(chainId) as RouterConfig;
         }
 
         const wxUsdt = getWxUSDT(chainId);
@@ -37,12 +38,12 @@ class PaymentService {
 
         const swapParams = [
             {
-                router: router,
+                router: router.address,
                 route: [wxUsdt, usdt],
                 fees: [100],
                 amountOutMinimum: (amountIn * 98n) / 100n,
                 deadline: BigInt(deadline),
-                swapType: 1,
+                swapType: router.swapType,
             },
         ];
 

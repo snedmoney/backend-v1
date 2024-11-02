@@ -3,9 +3,14 @@ import { Request, Response, Router } from 'express';
 import { DataSource } from 'typeorm';
 import { LinkService } from '@/services/link';
 import { LinkType } from '@/models/link';
-import { User } from '@/models';
-import { UserService } from '@/services';
 import z from 'zod';
+import {
+    ChainService,
+    TokenService,
+    UserService,
+    WalletService,
+} from '@/services';
+import { User } from '@/models';
 
 const linkSchema = z.object({
     title: z.string({
@@ -19,21 +24,33 @@ const linkSchema = z.object({
     }),
     acceptUntil: z.string().optional(),
     goalAmount: z.number().optional(),
-    destinationTokenAddress: z.string().optional(),
-    destinationChainId: z.number().optional(),
+    destinationTokenAddress: z.string({
+        required_error: 'destinationTokenAddress is required',
+    }),
+    destinationChainId: z.number({
+        required_error: 'destinationChainId is required',
+    }),
     destinationWalletId: z.bigint().optional(),
-    destinationWalletAddress: z.string().optional(),
+    destinationWalletAddress: z.string({
+        required_error: 'destinationWalletAddress is required',
+    }),
 });
 
 export class LinkRoutes {
     linkService: LinkService;
     userService: UserService;
+    walletService: WalletService;
+    chainService: ChainService;
+    tokenService: TokenService;
     router: Router;
 
     constructor(dataSource: DataSource) {
         this.router = Router();
         this.linkService = new LinkService(dataSource);
         this.userService = new UserService(dataSource);
+        this.walletService = new WalletService(dataSource);
+        this.chainService = new ChainService(dataSource);
+        this.tokenService = new TokenService(dataSource);
         this.registerRoutes();
     }
 
@@ -272,16 +289,38 @@ export class LinkRoutes {
 
         const body = req.body as z.infer<typeof linkSchema>;
 
-        let user: User;
-        if (body.destinationWalletAddress) {
-            user = await this.userService.getUserByWalletAddress(
-                body.destinationWalletAddress
-            );
-            if (!user) {
-                return res.status(404).json({
-                    error: `User with wallet address ${body.destinationWalletAddress} not found`,
-                });
-            }
+        const user = await this.userService.getUserByWalletAddress(
+            body.destinationWalletAddress
+        );
+        if (!user) {
+            return res.status(404).json({
+                error: `User with wallet address ${body.destinationWalletAddress} not found`,
+            });
+        }
+
+        const wallet = await this.walletService.getWalletByAddress(
+            body.destinationWalletAddress
+        );
+        if (!wallet) {
+            return res.status(404).json({
+                error: `Wallet with address ${body.destinationWalletAddress} not found, this is required`,
+            });
+        }
+
+        const chain = await this.chainService.getChain(body.destinationChainId);
+        if (!chain) {
+            return res.status(404).json({
+                error: `Chain with ID ${body.destinationChainId} not found, this is required`,
+            });
+        }
+
+        const token = await this.tokenService.getTokenByAddress(
+            body.destinationTokenAddress
+        );
+        if (!token) {
+            return res.status(404).json({
+                error: `Token with address ${body.destinationTokenAddress} not found, this is required`,
+            });
         }
 
         try {
@@ -292,9 +331,9 @@ export class LinkRoutes {
                 title: body.title,
                 acceptUntil: new Date(body.acceptUntil),
                 goalAmount: body.goalAmount,
-                destinationChainId: body.destinationChainId,
-                destinationTokenAddress: body.destinationTokenAddress,
-                destinationWalletAddress: body.destinationWalletAddress,
+                destinationChain: chain,
+                destinationToken: token,
+                destinationWallet: wallet,
             });
             return res.status(201).json(createdLink);
         } catch (err) {

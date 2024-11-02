@@ -371,9 +371,9 @@ export class UserRoutes {
             ['User']
         );
 
-        if (!wallet) {
+        if (!wallet && !wallet.address) {
             return res.status(400).json({
-                error: 'Invalid wallet address',
+                error: 'Wallet address not found, have you connected your wallet yet before creating your profile?',
             });
         }
 
@@ -439,9 +439,9 @@ export class UserRoutes {
             description: about,
             acceptUntil: undefined,
             user: savedUser,
-            destinationChainId: chain.id,
-            destinationTokenAddress: token.address,
-            destinationWalletAddress: wallet.address,
+            destinationChain: chain,
+            destinationToken: token,
+            destinationWallet: wallet,
         });
 
         return res.status(200).json({

@@ -80,9 +80,9 @@ export class AuthRoutes {
                 message: authMessage,
                 signature: signature,
             });
-            const wallet = await this.walletService.getWalletByAddress(address);
+            let wallet = await this.walletService.getWalletByAddress(address);
             if (!wallet) {
-                await this.walletService.createWallet({
+                wallet = await this.walletService.createWallet({
                     address,
                     user: new User(),
                 });
